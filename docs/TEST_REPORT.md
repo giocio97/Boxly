@@ -18,6 +18,13 @@ Owner: **qa** · Data: 2026-10-15 · Fonte di verità: [CONTRACT.md](CONTRACT.md
 | Unit + componenti + schermate | Jest 29 + RNTL 13 (jest-expo) | Node | 123 (15 suite) | 123 | 0 | 0 | ~4 s |
 | E2E completa | Maestro 2.11 | **iOS** build nativa `com.boxly.app` — iPhone 17 Pro, iOS 26.3 | 9 flussi | 9 | 0 | 0 | 5 min 09 s |
 | E2E smoke | Maestro 2.11 | **Android** Expo Go `host.exp.exponent` — Pixel 9 Pro API 35 | 2 flussi | 2 | 0 | 0 | 1 min 36 s |
+| Manuale su dispositivo fisico | a mano (utente) | **Android** Expo Go 57.0.9 — Samsung Galaxy A02s, Android 12 | 2 verifiche | 2 | 0 | 0 | — |
+
+### Test manuali su dispositivo fisico (2026-10-15)
+| Verifica | Esito |
+|---|---|
+| Scatto foto con la fotocamera reale nel form oggetto (`item-photo-camera`) | ✅ funziona |
+| Scansione con la fotocamera reale del QR di una scatola (mostrato sullo schermo del simulatore iOS) → apre la scatola corretta | ✅ funziona |
 
 ### Copertura E2E per piattaforma
 
@@ -96,9 +103,9 @@ Note, non bug:
   - permessi nativi dell'app.
 
   Su Android coperti: login ok/errato, lista, dettaglio, QR, ricerca, ruolo viewer, logout. Da ripetere con `npx expo run:android` quando il proxy lo permette.
-- **Fotocamera reale.** Né lo scatto (`item-photo-camera`) né la lettura di un QR con la fotocamera sono testati: i simulatori non hanno fotocamera. La logica dello scanner è coperta in Jest (CameraView mockata) e con l'inserimento manuale del codice.
+- **Fotocamera reale.** ~~Non testata sui simulatori.~~ Verificata a mano su dispositivo fisico Android (Samsung Galaxy A02s, Expo Go): scatto foto e scansione QR funzionano. Resta non verificata su un iPhone fisico e non automatizzata (Maestro non ha accesso alla fotocamera).
 - **Stampa e condivisione fisica dell'etichetta.** `print-label-button` e `share-qr-button` sono verificati solo come presenti. La stampa reale e il foglio di condivisione di sistema non sono testati. Il contenuto HTML dell'etichetta 6×6 è testato in Jest.
-- **Contenuto ottico del QR.** Il QR non viene decodificato dall'immagine (manca un decoder). Il valore codificato è verificato in unit test: `boxQrValue` e SVG deterministico per id.
+- **Contenuto ottico del QR.** Nessun decoder automatico nei test; il valore codificato è verificato in unit test (`boxQrValue`, SVG deterministico per id). La lettura ottica end-to-end è stata verificata a mano: il QR mostrato dall'app iOS, letto dal telefono Android, apre la scatola giusta.
 - **Concorrenza e realtime.** Non coperti: modifiche simultanee di due utenti, scadenza delle signed URL dopo 60 min, refresh del token.
 - **Accessibilità e tema scuro.** Non verificati in modo sistematico. Nota a margine: le card espongono un'unica etichetta di accessibilità che unisce i testi.
 - **Prestazioni.** Ricerca e liste sono state provate solo sui dati seed (più 60 oggetti nel test del limite a 50).
