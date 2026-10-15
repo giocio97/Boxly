@@ -1,0 +1,32 @@
+appId: com.boxly.app
+name: Profilo e logout
+tags: [auth, smoke]
+---
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: alice@boxly.test
+      PASSWORD: password123
+- tapOn:
+    id: "tab-profile"
+- assertVisible:
+    id: "profile-email"
+    text: "alice@boxly.test"
+- takeScreenshot: screenshots/09a_profile
+- tapOn:
+    id: "logout-button"
+- tapOn:
+    id: "confirm-yes"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: "login-email"
+    timeout: 10000
+- takeScreenshot: screenshots/09b_logged_out
+# la sessione non sopravvive al riavvio
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "login-email"
+    timeout: 15000

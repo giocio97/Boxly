@@ -1,0 +1,16 @@
+# Indietro cross-platform: su iOS Maestro non ha `back` → swipe dal bordo sinistro
+appId: com.boxly.app
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          start: "1%,50%"
+          end: "85%,50%"
+          duration: 400

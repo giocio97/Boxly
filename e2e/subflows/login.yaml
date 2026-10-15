@@ -1,0 +1,28 @@
+# Login con EMAIL / PASSWORD (env). Presuppone la schermata di login visibile.
+appId: com.boxly.app
+---
+- extendedWaitUntil:
+    visible:
+      id: "login-email"
+    timeout: 20000
+- tapOn:
+    id: "login-email"
+- inputText: ${EMAIL}
+- tapOn:
+    id: "login-password"
+- inputText: ${PASSWORD}
+- tapOn:
+    id: "login-submit"
+# iOS: dialogo di sistema "Vuoi salvare la password?" (Portachiavi) dopo il login
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "(Non ora|Not Now)"
+          timeout: 4000
+          optional: true
+      - tapOn:
+          text: "(Non ora|Not Now)"
+          optional: true

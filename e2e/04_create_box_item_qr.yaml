@@ -1,0 +1,76 @@
+appId: com.boxly.app
+name: Crea scatola, aggiungi oggetto con foto dalla libreria, mostra QR
+tags: [core, smoke]
+---
+- evalScript: ${output.boxName = 'QA Box ' + Date.now()}
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: alice@boxly.test
+      PASSWORD: password123
+- tapOn:
+    id: "new-box-button"
+- tapOn:
+    id: "box-name-input"
+- inputText: ${output.boxName}
+- tapOn:
+    id: "box-location-input"
+- inputText: "Soffitta"
+- pressKey: Enter
+- tapOn:
+    id: "box-season-winter"
+- takeScreenshot: screenshots/04a_box_form
+- tapOn:
+    id: "box-save"
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+    timeout: 15000
+- assertVisible:
+    id: "box-title"
+    text: ${output.boxName}
+- assertVisible:
+    id: "empty-items"
+- assertVisible:
+    id: "role-badge"
+- tapOn:
+    id: "add-item-button"
+- runFlow: subflows/pick_photo.yaml
+- tapOn:
+    id: "item-name-input"
+- inputText: "Cappotto cammello"
+- pressKey: Enter
+- tapOn:
+    id: "item-brand-input"
+- inputText: "Zara"
+- pressKey: Enter
+- tapOn:
+    id: "item-color-input"
+- inputText: "beige"
+- pressKey: Enter
+- scrollUntilVisible:
+    element:
+      id: "item-save"
+- takeScreenshot: screenshots/04b_item_form
+- tapOn:
+    id: "item-save"
+- extendedWaitUntil:
+    visible:
+      id: "item-list"
+    timeout: 20000
+- assertVisible: ".*Cappotto cammello.*"
+- assertNotVisible: ".*cammello[a-z]?Zara.*"
+- assertNotVisible:
+    id: "empty-items"
+- takeScreenshot: screenshots/04c_box_with_item
+- tapOn:
+    id: "show-qr-button"
+- extendedWaitUntil:
+    visible:
+      id: "qr-code"
+    timeout: 10000
+- assertVisible:
+    id: "print-label-button"
+- assertVisible:
+    id: "share-qr-button"
+- takeScreenshot: screenshots/04d_qr

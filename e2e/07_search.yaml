@@ -1,0 +1,36 @@
+appId: com.boxly.app
+name: Ricerca "maglione" trova il Maglione blu in Inverno 2025
+tags: [search, smoke]
+---
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: alice@boxly.test
+      PASSWORD: password123
+- tapOn:
+    id: "tab-search"
+- tapOn:
+    id: "search-input"
+- inputText: "maglione"
+- extendedWaitUntil:
+    visible:
+      id: "search-result-.*"
+    timeout: 10000
+- assertVisible: ".*Maglione blu.*"
+- assertVisible: ".*Inverno 2025.*"
+- takeScreenshot: screenshots/07a_search_maglione
+- tapOn:
+    id: "search-result-.*"
+- extendedWaitUntil:
+    visible: ".*Maglione blu.*"
+    timeout: 10000
+- runFlow: subflows/go_back.yaml
+- tapOn:
+    id: "search-input"
+- eraseText: 20
+- inputText: "zzznonesiste"
+- extendedWaitUntil:
+    visible:
+      id: "search-empty"
+    timeout: 10000
+- takeScreenshot: screenshots/07b_search_empty

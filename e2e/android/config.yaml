@@ -1,0 +1,4 @@
+# Smoke Android in Expo Go (build Gradle bloccata dal proxy). Eseguire con:
+#   maestro --device emulator-5554 test e2e/android/
+flows:
+  - "*.yaml"

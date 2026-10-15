@@ -1,0 +1,100 @@
+appId: host.exp.exponent
+name: "Android (Expo Go) smoke: login → lista → dettaglio → QR → ricerca → logout"
+tags: [android, smoke]
+---
+- runFlow: subflows/open_expo.yaml
+# login errato
+- tapOn:
+    id: "login-email"
+- inputText: "alice@boxly.test"
+- tapOn:
+    id: "login-password"
+- inputText: "sbagliata"
+- hideKeyboard
+- tapOn:
+    id: "login-submit"
+- extendedWaitUntil:
+    visible:
+      id: "auth-error"
+    timeout: 15000
+- takeScreenshot: screenshots/android_01_login_error
+# login ok
+- tapOn:
+    id: "login-password"
+- eraseText: 20
+- inputText: "password123"
+- hideKeyboard
+- tapOn:
+    id: "login-submit"
+- extendedWaitUntil:
+    visible:
+      id: "box-list"
+    timeout: 20000
+- assertVisible:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- assertVisible:
+    id: "box-card-11111111-1111-1111-1111-000000000002"
+- assertNotVisible:
+    id: "box-card-11111111-1111-1111-1111-000000000003"
+- takeScreenshot: screenshots/android_02_box_list
+# dettaglio
+- tapOn:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+      text: "Inverno 2025"
+    timeout: 15000
+- assertVisible:
+    id: "role-badge"
+- assertVisible:
+    id: "add-item-button"
+- assertVisible: ".*Maglione blu.*"
+- takeScreenshot: screenshots/android_03_box_detail
+# QR
+- tapOn:
+    id: "show-qr-button"
+- extendedWaitUntil:
+    visible:
+      id: "qr-code"
+    timeout: 15000
+- assertVisible:
+    id: "print-label-button"
+- takeScreenshot: screenshots/android_04_qr
+- back
+- back
+# ricerca
+- extendedWaitUntil:
+    visible:
+      id: "box-list"
+    timeout: 10000
+- tapOn:
+    id: "tab-search"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "search-input"
+    timeout: 10000
+- tapOn:
+    id: "search-input"
+- inputText: "maglione"
+- extendedWaitUntil:
+    visible:
+      id: "search-result-.*"
+    timeout: 15000
+- assertVisible: ".*Maglione blu.*"
+- assertVisible: ".*Inverno 2025.*"
+- takeScreenshot: screenshots/android_05_search
+# logout
+- tapOn:
+    id: "tab-profile"
+- assertVisible:
+    id: "profile-email"
+    text: "alice@boxly.test"
+- tapOn:
+    id: "logout-button"
+- extendedWaitUntil:
+    visible:
+      id: "login-email"
+    timeout: 15000
+- takeScreenshot: screenshots/android_06_logged_out

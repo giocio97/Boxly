@@ -1,0 +1,40 @@
+appId: host.exp.exponent
+name: "Android (Expo Go): bob viewer su Inverno non vede i pulsanti di modifica"
+tags: [android, roles]
+---
+- runFlow: subflows/open_expo.yaml
+- tapOn:
+    id: "login-email"
+- inputText: "bob@boxly.test"
+- tapOn:
+    id: "login-password"
+- inputText: "password123"
+- hideKeyboard
+- tapOn:
+    id: "login-submit"
+- extendedWaitUntil:
+    visible:
+      id: "box-card-11111111-1111-1111-1111-000000000003"
+    timeout: 20000
+- tapOn:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+    timeout: 15000
+- assertNotVisible:
+    id: "add-item-button"
+- assertNotVisible:
+    id: "edit-box-button"
+- assertNotVisible:
+    id: "delete-box-button"
+- takeScreenshot: screenshots/android_07_bob_viewer
+- back
+- tapOn:
+    id: "tab-profile"
+- tapOn:
+    id: "logout-button"
+- extendedWaitUntil:
+    visible:
+      id: "login-email"
+    timeout: 15000

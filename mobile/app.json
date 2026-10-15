@@ -1,0 +1,73 @@
+{
+  "expo": {
+    "name": "Boxly",
+    "slug": "boxly",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "boxly",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.boxly.app",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Boxly usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
+        "NSPhotoLibraryUsageDescription": "Boxly usa le tue foto per aggiungere un'immagine agli oggetti nelle scatole.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "package": "com.boxly.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#B8742F",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      },
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FAF7F2",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120,
+          "dark": {
+            "backgroundColor": "#15130F"
+          }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Boxly usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Boxly usa le tue foto per aggiungere un'immagine agli oggetti nelle scatole.",
+          "cameraPermission": "Boxly usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-sharing",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

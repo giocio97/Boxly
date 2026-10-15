@@ -1,0 +1,44 @@
+# Sceglie la prima foto dalla libreria (precaricata con scripts/preload-media.sh)
+appId: com.boxly.app
+---
+- tapOn:
+    id: "item-photo-library"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      # Alcune versioni chiedono l'accesso limitato/completo alla libreria
+      - tapOn:
+          text: "(Allow Full Access|Consenti accesso completo|Allow Access to All Photos)"
+          optional: true
+      - extendedWaitUntil:
+          visible:
+            text: "(Photos|Foto|Recents|Recenti)"
+          timeout: 15000
+      # PHPicker: prima miniatura della griglia
+      - tapOn:
+          point: "17%,30%"
+      - tapOn:
+          text: "(Choose|Scegli|Add|Aggiungi|Done|Fine)"
+          optional: true
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          text: "(Allow|Consenti|ALLOW)"
+          optional: true
+      - extendedWaitUntil:
+          visible:
+            text: "(Photos|Foto|Recent|Recenti|Images|Immagini)"
+          timeout: 15000
+      # Android Photo Picker: prima miniatura
+      - tapOn:
+          point: "17%,30%"
+      - tapOn:
+          text: "(Crop|Ritaglia|Done|Fine|OK)"
+          optional: true
+- extendedWaitUntil:
+    visible:
+      id: "item-photo-preview"
+    timeout: 15000

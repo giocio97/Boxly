@@ -1,0 +1,46 @@
+# Apre Boxly dentro Expo Go e chiude il menu sviluppatore. Se è già loggato, fa logout.
+appId: host.exp.exponent
+---
+- launchApp:
+    appId: host.exp.exponent
+    permissions:
+      all: allow
+- openLink: ${EXPO_URL || 'exp://10.0.2.2:8082'}
+- extendedWaitUntil:
+    visible:
+      text: "(Continue|Reload|.*Boxly.*|Accedi|Le mie scatole)"
+    timeout: 60000
+- tapOn:
+    text: "Continue"
+    optional: true
+- runFlow:
+    when:
+      visible: "Reload"
+    commands:
+      - back
+# se il "back" ha chiuso il progetto ed è tornato alla home di Expo Go, riapri il link
+- runFlow:
+    when:
+      visible: "(Development servers|Recent history)"
+    commands:
+      - openLink: ${EXPO_URL || 'exp://10.0.2.2:8082'}
+      - tapOn:
+          text: "Continue"
+          optional: true
+- extendedWaitUntil:
+    visible:
+      id: "(login-email|tab-boxes)"
+    timeout: 60000
+- runFlow:
+    when:
+      visible:
+        id: "tab-profile"
+    commands:
+      - tapOn:
+          id: "tab-profile"
+      - tapOn:
+          id: "logout-button"
+      - extendedWaitUntil:
+          visible:
+            id: "login-email"
+          timeout: 15000

@@ -1,0 +1,35 @@
+appId: com.boxly.app
+name: Registrazione nuovo utente → lista vuota
+tags: [auth]
+---
+- evalScript: ${output.email = 'qa' + Date.now() + '@boxly.test'}
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "goto-signup"
+    timeout: 20000
+- tapOn:
+    id: "goto-signup"
+- tapOn:
+    id: "signup-name"
+- inputText: "QA Tester"
+- pressKey: Enter
+- tapOn:
+    id: "signup-email"
+- inputText: ${output.email}
+- pressKey: Enter
+- tapOn:
+    id: "signup-password"
+- inputText: "password123"
+# chiude la tastiera toccando un testo statico (keyboardShouldPersistTaps="handled"), poi invia col pulsante
+- tapOn: "Crea il tuo account.*"
+- tapOn:
+    id: "signup-submit"
+- extendedWaitUntil:
+    visible:
+      id: "empty-boxes"
+    timeout: 20000
+- assertVisible:
+    id: "new-box-button"
+- takeScreenshot: screenshots/03_signup_empty

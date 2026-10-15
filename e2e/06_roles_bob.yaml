@@ -1,0 +1,40 @@
+appId: com.boxly.app
+name: Bob viewer su Inverno (niente modifica), editor su Estate (può aggiungere)
+tags: [roles]
+---
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: bob@boxly.test
+      PASSWORD: password123
+- extendedWaitUntil:
+    visible:
+      id: "box-card-11111111-1111-1111-1111-000000000003"
+    timeout: 15000
+- assertVisible:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- assertVisible:
+    id: "box-card-11111111-1111-1111-1111-000000000002"
+- tapOn:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+    timeout: 10000
+- assertNotVisible:
+    id: "add-item-button"
+- assertNotVisible:
+    id: "edit-box-button"
+- assertNotVisible:
+    id: "delete-box-button"
+- takeScreenshot: screenshots/06a_bob_viewer
+- runFlow: subflows/go_back.yaml
+- tapOn:
+    id: "box-card-11111111-1111-1111-1111-000000000002"
+- extendedWaitUntil:
+    visible:
+      id: "add-item-button"
+    timeout: 10000
+- assertNotVisible:
+    id: "delete-box-button"
+- takeScreenshot: screenshots/06b_bob_editor

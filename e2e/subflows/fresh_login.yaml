@@ -1,0 +1,16 @@
+# Avvio pulito + login + attesa lista scatole
+appId: com.boxly.app
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- runFlow:
+    file: login.yaml
+    env:
+      EMAIL: ${EMAIL}
+      PASSWORD: ${PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: "tab-boxes"
+    timeout: 20000

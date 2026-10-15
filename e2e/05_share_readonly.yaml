@@ -1,0 +1,99 @@
+appId: com.boxly.app
+name: Alice condivide Inverno con carol in sola lettura; carol vede ma non modifica
+tags: [sharing, roles]
+---
+# 1. alice condivide
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: alice@boxly.test
+      PASSWORD: password123
+- tapOn:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+    timeout: 10000
+- tapOn:
+    id: "share-button"
+- extendedWaitUntil:
+    visible:
+      id: "share-email-input"
+    timeout: 10000
+- assertVisible:
+    id: "share-row-00000000-0000-0000-0000-00000000000b"
+# errore: email inesistente
+- tapOn:
+    id: "share-email-input"
+- inputText: "nessuno@boxly.test"
+- tapOn:
+    id: "share-role-viewer"
+- tapOn:
+    id: "share-submit"
+- extendedWaitUntil:
+    visible:
+      id: "share-error"
+    timeout: 10000
+- takeScreenshot: screenshots/05a_share_error
+- tapOn:
+    id: "share-email-input"
+- eraseText: 40
+- inputText: "carol@boxly.test"
+- tapOn:
+    id: "share-role-viewer"
+- tapOn:
+    id: "share-submit"
+- extendedWaitUntil:
+    visible:
+      id: "share-row-00000000-0000-0000-0000-00000000000c"
+    timeout: 10000
+- takeScreenshot: screenshots/05b_shared_with_carol
+# 2. carol vede la scatola in sola lettura
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: carol@boxly.test
+      PASSWORD: password123
+- extendedWaitUntil:
+    visible:
+      id: "box-card-11111111-1111-1111-1111-000000000001"
+    timeout: 15000
+- assertNotVisible:
+    id: "box-card-11111111-1111-1111-1111-000000000002"
+- tapOn:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+    timeout: 10000
+- assertVisible:
+    id: "role-badge"
+- assertVisible: ".*Maglione blu.*"
+- assertNotVisible:
+    id: "add-item-button"
+- assertNotVisible:
+    id: "edit-box-button"
+- assertNotVisible:
+    id: "delete-box-button"
+- assertVisible:
+    id: "show-qr-button"
+- takeScreenshot: screenshots/05c_carol_readonly
+# 3. pulizia: alice revoca carol
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: alice@boxly.test
+      PASSWORD: password123
+- tapOn:
+    id: "box-card-11111111-1111-1111-1111-000000000001"
+- tapOn:
+    id: "share-button"
+- tapOn:
+    id: "revoke-00000000-0000-0000-0000-00000000000c"
+- tapOn:
+    id: "confirm-yes"
+    optional: true
+- extendedWaitUntil:
+    notVisible:
+      id: "share-row-00000000-0000-0000-0000-00000000000c"
+    timeout: 10000

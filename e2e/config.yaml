@@ -1,0 +1,15 @@
+# Boxly E2E — eseguire con: maestro test e2e/  (app già installata, Supabase locale con db reset)
+flows:
+  - "*.yaml"
+executionOrder:
+  continueOnFailure: true
+  flowsOrder:
+    - 01_login_error
+    - 02_login_ok
+    - 03_signup
+    - 04_create_box_item_qr
+    - 05_share_readonly
+    - 06_roles_bob
+    - 07_search
+    - 08_deeplink
+    - 09_logout

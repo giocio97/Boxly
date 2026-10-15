@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+mobile/ios/
+mobile/android/
+.env
+*.log
+supabase/.branches/
+supabase/.temp/
+.DS_Store
+e2e/reports/
