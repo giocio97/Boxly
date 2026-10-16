@@ -46,6 +46,8 @@ Lettura: `can_read_box` della scatola dell'item `(storage.foldername(name))[1]::
 Scrittura e cancellazione: `can_edit_box` della stessa scatola. L'item deve esistere prima
 dell'upload. Flusso app: insert item → upload foto → update `photo_path`.
 L'app mostra le foto con `createSignedUrl` (60 min).
+Prima del caricamento l'app ridimensiona ogni foto a **≤1600 px sul lato lungo** e la salva in **JPEG al 70%**
+(`preparePhoto` in `mobile/src/lib/photos.ts`); dimensione tipica 150–400 KB.
 
 ## 4. RPC e view
 | Nome | Firma | Comportamento |

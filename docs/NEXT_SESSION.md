@@ -52,10 +52,9 @@ cd mobile && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 npx expo run:ios --device "iPho
 # Android emulatore (Pixel_9_Pro_API_VanillaIceCream): Expo Go su 8082
 npx expo start --go --android --port 8082          # poi exp://10.0.2.2:8082
 
-# Telefono fisico (Samsung A02s, Android 12, Expo Go 57.0.9), USB + stessa Wi-Fi
-EXPO_OFFLINE=1 EXPO_PUBLIC_SUPABASE_URL=http://$(ipconfig getifaddr en0):54321 \
-  npx expo start --go --port 8083 --clear
-adb reverse tcp:8083 tcp:8083
+# Telefono fisico (Samsung A02s, Android 12, Expo Go 57.0.9): solo cavo USB, Wi-Fi non necessario
+EXPO_OFFLINE=1 npx expo start --go --port 8083 --clear
+adb reverse tcp:8083 tcp:8083 && adb reverse tcp:54321 tcp:54321
 adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8083" host.exp.exponent
 
 # Test
@@ -73,7 +72,7 @@ e2e/scripts/run-e2e.sh ios   |   e2e/scripts/run-e2e.sh android
   - per la CLI Node a volte serve `NODE_EXTRA_CA_CERTS` con la root CA del proxy.
 - **Expo Go:**
   - il deep link `boxly://` non funziona, perché usa `exp://`;
-  - `resolveSupabaseUrl` (`mobile/src/lib/supabase.ts`) sostituisce `127.0.0.1` con `10.0.2.2` su Android: va bene per l'emulatore, ma sul telefono serve l'IP del Mac via env.
+  - `resolveSupabaseUrl` (`mobile/src/lib/supabase.ts`) sostituisce `127.0.0.1` con `10.0.2.2` **solo sull'emulatore** Android. Sul telefono fisico (`Device.isDevice`) resta `127.0.0.1` e passa dal cavo USB con `adb reverse`. Modifica del 2026-10-16.
 - **Git e account:**
   - il remote è `https://giocio97@github.com/giocio97/Boxly.git`, con email locale del repo `giociotta@gmail.com` e `http.postBuffer` alto;
   - il token GitHub fine-grained "boxly" (solo il repository Boxly, Contents in scrittura) **scade il 14/11/2026**;
@@ -204,7 +203,53 @@ e2e/scripts/run-e2e.sh ios   |   e2e/scripts/run-e2e.sh android
    ```
 5. Su Android, perché il browser raggiunga Supabase, usa `adb reverse tcp:54321 tcp:54321`, sia sull'emulatore sia sul telefono.
 
-## 7. Roadmap successiva (fuori dalla v2)
+## 7. Decisioni aperte (rimandate dall'utente il 2026-10-16)
+
+### A. Nome dell'app: da decidere prima della pubblicazione sugli store
+"Boxly" è già usato. Nella categoria i nomi con "box" sono saturi: Boxy, Boxie, SmartBox, BoxQR, Box Radar, Packed, BoxtUp.
+Rosa preliminare: per nessuno di questi nomi la ricerca web ha trovato app di inventario o scatole con lo stesso nome. Marchi e domini **non** sono ancora verificati.
+
+| Nome | Origine | Nota |
+|---|---|---|
+| **Dovè** | "Dov'è?" | Si lega alla ricerca AI; da verificare la somiglianza con il marchio Dove (Unilever) |
+| **Stivo** | da "stivare" | Breve e internazionale |
+| **Ripò** | da "riporre" | L'accento fa da firma grafica |
+| **Scatolì** | "scatolina" | Molto italiano |
+
+Altri candidati: Kartò, Ordo, Dentro (dal payoff), Inscatola, Ritrovo.
+
+**Verifiche sul nome scelto:**
+- marchi su EUIPO (TMview) e UIBM, classi 9 e 42;
+- domini .app, .it, .com;
+- App Store e Google Play;
+- profili social.
+
+**Checklist per la rinomina:**
+- `mobile/app.json`: `name`, `slug`, `scheme`, `ios.bundleIdentifier` e `android.package` (oggi `com.boxly.app`).
+- Prefisso del QR `boxly://box/`: l'app deve continuare ad accettare **anche il vecchio prefisso**, per le etichette già stampate.
+- `BRAND.md`, icona e wordmark.
+- Testi UI, oggi italiani inline; dalla v2 nelle chiavi i18n.
+- `supabase/config.toml`: `project_id` e `additional_redirect_urls`.
+- `appId` in Maestro (`e2e/`), `CLAUDE.md`, `docs/CONTRACT.md`.
+- Repository GitHub: lo rinomina l'utente, poi `git remote set-url origin https://giocio97@github.com/giocio97/<nuovo>.git`.
+
+Conviene farla **prima** della v2 o insieme alla parte i18n, così le stringhe si toccano una volta sola.
+
+### B. Hosting del backend in produzione: da decidere prima del rilascio
+Docker non serve solo in locale. In locale fa girare Supabase; in produzione le opzioni sono:
+
+| Opzione | Costo indicativo | Pro | Contro |
+|---|---|---|---|
+| **Supabase Cloud, regione UE (Francoforte)**, consigliato | Free per i test; Pro circa 25 $/mese | Nessun server da gestire; backup, aggiornamenti e sicurezza inclusi; pubblicazione con `supabase link` + `supabase db push`; Edge Functions per la futura ricerca AI | Il piano Free mette in pausa il progetto dopo circa una settimana di inattività; costo fisso con utenti reali |
+| **VPS con Docker** (es. Hetzner), Supabase self-hosted | circa 5-10 €/mese | Costa meno; controllo totale | Backup, aggiornamenti, HTTPS, sicurezza e monitoraggio a carico tuo |
+
+- I prezzi vengono da blog di terze parti: **riverificarli su https://supabase.com/pricing**.
+- Impatto sull'app:
+  - in produzione `EXPO_PUBLIC_SUPABASE_URL` e la chiave anon puntano al progetto cloud;
+  - le redirect di Google OAuth vanno aggiornate con l'URL cloud;
+  - il seed demo non va pubblicato.
+
+## 8. Roadmap successiva (fuori dalla v2)
 - **Ricerca AI** "dov'è il maglione blu?": Supabase Edge Function + Claude (`claude-sonnet-5-5`) con un tool `search_items`, partendo dalla nuova barra di ricerca.
 - **Rilascio sugli store**: `docs/RELEASE.md` con EAS Build/Submit, account Apple (99 $/anno) e Google Play (25 $), Supabase cloud, privacy policy.
 - **Build Android nativa** via EAS, finché il proxy blocca Gradle in locale.

@@ -1,11 +1,19 @@
 import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
+import * as Device from 'expo-device';
 import { AppState, Platform } from 'react-native';
 
-/** Su emulatore Android 127.0.0.1/localhost puntano all'emulatore: si usa 10.0.2.2 (CONTRACT §1). */
-export function resolveSupabaseUrl(url: string, os: string = Platform.OS): string {
-  if (os !== 'android') return url;
+/**
+ * Su emulatore Android 127.0.0.1/localhost puntano all'emulatore: si usa 10.0.2.2 (CONTRACT §1).
+ * Su un telefono fisico collegato via USB si usa `adb reverse tcp:54321 tcp:54321`, quindi 127.0.0.1 resta valido.
+ */
+export function resolveSupabaseUrl(
+  url: string,
+  os: string = Platform.OS,
+  isPhysicalDevice: boolean = os === 'android' && Device.isDevice,
+): string {
+  if (os !== 'android' || isPhysicalDevice) return url;
   return url.replace('://127.0.0.1', '://10.0.2.2').replace('://localhost', '://10.0.2.2');
 }
 

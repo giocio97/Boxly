@@ -1,3 +1,4 @@
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 
@@ -12,17 +13,44 @@ export type PickResult = { photo: PickedPhoto } | { error: string } | { cancelle
 
 const pickerOptions: ImagePicker.ImagePickerOptions = {
   mediaTypes: ['images'],
-  quality: 0.6,
-  base64: true,
+  quality: 1,
+  base64: false,
   allowsEditing: false,
   exif: false,
 };
 
-function toResult(res: ImagePicker.ImagePickerResult): PickResult {
+/** Lato lungo massimo delle foto caricate (px) e qualità JPEG (CONTRACT §3). */
+export const MAX_PHOTO_SIDE = 1600;
+export const PHOTO_COMPRESS = 0.7;
+
+/**
+ * Ridimensiona la foto (lato lungo ≤ MAX_PHOTO_SIDE, proporzioni mantenute) e la ricodifica in JPEG,
+ * così ogni foto caricata pesa poche centinaia di KB invece di alcuni MB.
+ */
+export async function preparePhoto(asset: { uri: string; width: number; height: number }): Promise<PickedPhoto> {
+  const context = ImageManipulator.manipulate(asset.uri);
+  const longSide = Math.max(asset.width, asset.height);
+  if (longSide > MAX_PHOTO_SIDE) {
+    context.resize(asset.width >= asset.height ? { width: MAX_PHOTO_SIDE } : { height: MAX_PHOTO_SIDE });
+  }
+  const image = await context.renderAsync();
+  try {
+    const out = await image.saveAsync({ compress: PHOTO_COMPRESS, format: SaveFormat.JPEG, base64: true });
+    if (!out.base64) throw new Error('base64 mancante');
+    return { uri: out.uri, base64: out.base64 };
+  } finally {
+    image.release();
+    context.release();
+  }
+}
+
+async function toResult(res: ImagePicker.ImagePickerResult): Promise<PickResult> {
   if (res.canceled || !res.assets?.length) return { cancelled: true };
-  const a = res.assets[0];
-  if (!a.base64) return { error: 'Non riesco a leggere la foto. Riprova.' };
-  return { photo: { uri: a.uri, base64: a.base64 } };
+  try {
+    return { photo: await preparePhoto(res.assets[0]) };
+  } catch {
+    return { error: 'Non riesco a preparare la foto. Riprova.' };
+  }
 }
 
 export async function pickFromLibrary(): Promise<PickResult> {

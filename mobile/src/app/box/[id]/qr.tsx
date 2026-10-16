@@ -1,4 +1,5 @@
 import type { BoxOverview } from '@shared/types';
+import { File, Paths } from 'expo-file-system';
 import * as Print from 'expo-print';
 import { useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
@@ -46,22 +47,32 @@ export default function BoxQrScreen() {
     setBusy('share');
     setError(null);
     try {
-      const { uri } = await Print.printToFileAsync({
-        html: labelHtml(box, true),
-        width: LABEL_PT,
-        height: LABEL_PT,
-        margins: { left: 0, right: 0, top: 0, bottom: 0 },
-      });
       if (!(await Sharing.isAvailableAsync())) {
         setError('La condivisione non è disponibile su questo dispositivo.');
         return;
       }
-      await Sharing.shareAsync(uri, {
+      // In Expo Go su Android il file creato da expo-print non è leggibile da expo-sharing né da
+      // expo-file-system: chiediamo il PDF in base64 e lo scriviamo noi nella cache dell'app,
+      // con un nome leggibile.
+      const { base64 } = await Print.printToFileAsync({
+        html: labelHtml(box, true),
+        width: LABEL_PT,
+        height: LABEL_PT,
+        margins: { left: 0, right: 0, top: 0, bottom: 0 },
+        base64: true,
+      });
+      if (!base64) throw new Error('PDF vuoto');
+      const pdf = new File(Paths.cache, `etichetta-${labelFileName(box.name)}.pdf`);
+      if (pdf.exists) pdf.delete();
+      pdf.create();
+      pdf.write(base64, { encoding: 'base64' });
+      await Sharing.shareAsync(pdf.uri, {
         mimeType: 'application/pdf',
         UTI: 'com.adobe.pdf',
         dialogTitle: `Etichetta ${box.name}`,
       });
-    } catch {
+    } catch (e) {
+      console.warn('[label] condivisione etichetta fallita', e);
       setError('Non riesco a preparare l’etichetta. Riprova.');
     } finally {
       setBusy(null);
@@ -115,6 +126,18 @@ export default function BoxQrScreen() {
       </View>
     </Screen>
   );
+}
+
+/** Nome file sicuro: minuscole, senza accenti, solo lettere/numeri e trattini. */
+function labelFileName(name: string): string {
+  const slug = name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+  return slug || 'scatola';
 }
 
 const styles = StyleSheet.create({
