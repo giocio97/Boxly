@@ -2,7 +2,7 @@ import type { RpcErrorCode } from '@shared/types';
 
 import { errorMessage } from '@/lib/errors';
 
-const ALL_CODES: RpcErrorCode[] = ['not_owner', 'forbidden', 'user_not_found', 'cannot_share_with_self', 'invalid_role'];
+const ALL_CODES: RpcErrorCode[] = ['not_owner', 'forbidden', 'user_not_found', 'cannot_share_with_self', 'invalid_role', 'invalid_type'];
 
 describe('errorMessage: mapping errori RPC → italiano', () => {
   it.each(ALL_CODES)('%s ha un messaggio dedicato, non tecnico', (code) => {

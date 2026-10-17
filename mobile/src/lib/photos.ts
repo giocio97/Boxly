@@ -2,6 +2,8 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 
+import i18n from '@/i18n';
+
 import { PHOTO_BUCKET, supabase } from './supabase';
 
 export interface PickedPhoto {
@@ -49,7 +51,7 @@ async function toResult(res: ImagePicker.ImagePickerResult): Promise<PickResult>
   try {
     return { photo: await preparePhoto(res.assets[0]) };
   } catch {
-    return { error: 'Non riesco a preparare la foto. Riprova.' };
+    return { error: i18n.t('photos.prepareError') };
   }
 }
 
@@ -57,11 +59,11 @@ export async function pickFromLibrary(): Promise<PickResult> {
   try {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted && perm.accessPrivileges !== 'limited') {
-      return { error: 'Per scegliere una foto consenti a Boxly di accedere alla libreria nelle Impostazioni.' };
+      return { error: i18n.t('photos.libraryPermission') };
     }
     return toResult(await ImagePicker.launchImageLibraryAsync(pickerOptions));
   } catch {
-    return { error: 'Non riesco ad aprire la libreria. Riprova.' };
+    return { error: i18n.t('photos.libraryError') };
   }
 }
 
@@ -69,11 +71,11 @@ export async function takePhoto(): Promise<PickResult> {
   try {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) {
-      return { error: 'Per scattare una foto consenti a Boxly di usare la fotocamera nelle Impostazioni.' };
+      return { error: i18n.t('photos.cameraPermission') };
     }
     return toResult(await ImagePicker.launchCameraAsync(pickerOptions));
   } catch {
-    return { error: 'La fotocamera non è disponibile su questo dispositivo. Scegli una foto dalla libreria.' };
+    return { error: i18n.t('photos.cameraUnavailable') };
   }
 }
 

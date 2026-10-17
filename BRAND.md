@@ -1,9 +1,9 @@
-# Boxly — Brand
+# Stivo — Brand
 
 ## Identità
-- **Nome**: Boxly
+- **Nome**: Stivo (da "stivare"; ex Boxly, rinominata il 2026-10-17 perché il nome era già usato)
 - **Payoff**: *Sai sempre cosa c'è dentro.*
-- **Cos'è**: l'app per catalogare ciò che metti nelle scatole (cambio stagione, trasloco, cantina)
+- **Cos'è**: l'app per catalogare ciò che metti nelle scatole (cambio stagione, trasloco, cantina): vestiti, libri, elettronica, qualsiasi oggetto
   e ritrovarlo con un QR.
 - **Per chi**: persone e famiglie che stivano oggetti e vogliono ritrovarli senza aprire dieci scatole.
 
@@ -43,8 +43,8 @@ inverno `#4A7FB5`, tutto l'anno `#8A8178`.
 ## Logo e icona
 - Simbolo: scatola di cartone vista di 3/4 con un QR stilizzato sul fianco; linee pulite, 2 colori (Kraft + Teal).
 - Icona app: simbolo bianco su fondo Kraft `#B8742F`, angoli gestiti dalla piattaforma.
-- Wordmark: "Boxly" in Inter 700, la "o" può richiamare il quadrato del QR.
+- Wordmark: "Stivo" in Inter 700, la "o" finale può richiamare il quadrato del QR.
 
 ## Etichetta QR stampabile
-Formato 6×6 cm: QR al centro (codifica `boxly://box/<id>`), sotto nome scatola in grassetto,
-luogo e stagione in piccolo, wordmark "Boxly" in basso.
+Formato 6×6 cm: QR al centro (codifica `stivo://box/<id>`), sotto nome scatola in grassetto,
+luogo e stagione in piccolo, wordmark "Stivo" in basso.

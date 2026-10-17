@@ -1,4 +1,4 @@
-appId: com.boxly.app
+appId: com.stivo.app
 name: Profilo e logout
 tags: [auth, smoke]
 ---

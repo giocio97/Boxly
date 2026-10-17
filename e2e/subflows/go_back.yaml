@@ -1,5 +1,5 @@
 # Indietro cross-platform: su iOS Maestro non ha `back` → swipe dal bordo sinistro
-appId: com.boxly.app
+appId: com.stivo.app
 ---
 - runFlow:
     when:

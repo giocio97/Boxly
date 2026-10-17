@@ -1,6 +1,7 @@
 import type { BoxOverview } from '@shared/types';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { BoxForm } from '@/components/BoxForm';
 import { EmptyState } from '@/components/EmptyState';
@@ -11,6 +12,7 @@ import { canEdit } from '@/lib/labels';
 
 export default function EditBoxScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { t } = useTranslation();
   const [box, setBox] = useState<BoxOverview | null | undefined>(undefined);
 
   useEffect(() => {
@@ -19,16 +21,16 @@ export default function EditBoxScreen() {
 
   if (box === undefined) return <Loading />;
   if (!box || !canEdit(box.my_role)) {
-    return <EmptyState title="Non puoi modificare questa scatola." icon="lock-closed-outline" />;
+    return <EmptyState title={t('boxes.form.cannotEdit')} icon="lock-closed-outline" />;
   }
 
   return (
     <BoxForm
       initial={box}
-      submitLabel="Salva modifiche"
+      submitLabel={t('common.save')}
       onSubmit={async (values) => {
         const res = await updateBox(id, values);
-        if (res.error) return errorMessage(res.error, 'Non riesco a salvare. Riprova.');
+        if (res.error) return errorMessage(res.error, t('boxes.form.saveError'));
         router.back();
         return null;
       }}

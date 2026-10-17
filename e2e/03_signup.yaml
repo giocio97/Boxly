@@ -1,5 +1,5 @@
-appId: com.boxly.app
-name: Registrazione nuovo utente → lista vuota
+appId: com.stivo.app
+name: Registrazione nuovo utente → lista vuota con new-box-button e barra di ricerca
 tags: [auth]
 ---
 - evalScript: ${output.email = 'qa' + Date.now() + '@boxly.test'}
@@ -22,14 +22,24 @@ tags: [auth]
 - tapOn:
     id: "signup-password"
 - inputText: "password123"
-# chiude la tastiera toccando un testo statico (keyboardShouldPersistTaps="handled"), poi invia col pulsante
-- tapOn: "Crea il tuo account.*"
+# chiude la tastiera toccando l'intestazione statica (keyboardShouldPersistTaps="handled"), senza dipendere dal testo
+- tapOn:
+    point: "50%,12%"
 - tapOn:
     id: "signup-submit"
 - extendedWaitUntil:
     visible:
       id: "empty-boxes"
     timeout: 20000
+# v2: la pillola "Nuova scatola" è visibile anche a lista vuota
 - assertVisible:
     id: "new-box-button"
+- assertVisible:
+    id: "home-search-bar"
 - takeScreenshot: screenshots/03_signup_empty
+- tapOn:
+    id: "new-box-button"
+- extendedWaitUntil:
+    visible:
+      id: "box-name-input"
+    timeout: 10000

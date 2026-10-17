@@ -1,7 +1,7 @@
 import type { BoxRole, Season } from '@shared/types';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { roleLabel, seasonLabel } from '@/lib/labels';
 import { radius, space, seasonColors, useTheme } from '@/theme';
 import { AppText } from './AppText';
 
@@ -33,13 +33,15 @@ export function Badge({
 
 export function SeasonBadge({ season, style }: { season: Season | null | undefined; style?: StyleProp<ViewStyle> }) {
   const { dark } = useTheme();
+  const { t } = useTranslation();
   if (!season) return null;
-  return <Badge label={seasonLabel[season]} color={seasonColors[season]} filled={!dark} style={style} />;
+  return <Badge label={t(`seasons.${season}`)} color={seasonColors[season]} filled={!dark} style={style} />;
 }
 
 export function RoleBadge({ role, testID }: { role: BoxRole; testID?: string }) {
   const { colors } = useTheme();
-  return <Badge label={roleLabel[role]} color={colors.accent} testID={testID} />;
+  const { t } = useTranslation();
+  return <Badge label={t(`roles.${role}`)} color={colors.accent} testID={testID} />;
 }
 
 const styles = StyleSheet.create({

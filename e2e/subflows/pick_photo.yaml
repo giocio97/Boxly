@@ -1,5 +1,5 @@
 # Sceglie la prima foto dalla libreria (precaricata con scripts/preload-media.sh)
-appId: com.boxly.app
+appId: com.stivo.app
 ---
 - tapOn:
     id: "item-photo-library"

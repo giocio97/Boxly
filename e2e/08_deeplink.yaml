@@ -1,5 +1,5 @@
-appId: com.boxly.app
-name: Deep link boxly://box/<id> apre Inverno 2025 (loggato e dopo il login)
+appId: com.stivo.app
+name: Deep link stivo://box/<id> e legacy boxly://box/<id> aprono la scatola (loggato e dopo il login)
 tags: [deeplink]
 ---
 # Da loggato
@@ -8,6 +8,22 @@ tags: [deeplink]
     env:
       EMAIL: alice@boxly.test
       PASSWORD: password123
+- openLink: stivo://box/11111111-1111-1111-1111-000000000001
+- tapOn:
+    text: "(Open|Apri)"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+      text: "Inverno 2025"
+    timeout: 15000
+- takeScreenshot: screenshots/08a_deeplink_stivo_inverno
+# legacy: etichette stampate con boxly://
+- runFlow: subflows/go_back.yaml
+- extendedWaitUntil:
+    visible:
+      id: "box-list"
+    timeout: 10000
 - openLink: boxly://box/11111111-1111-1111-1111-000000000001
 - tapOn:
     text: "(Open|Apri)"
@@ -17,11 +33,11 @@ tags: [deeplink]
       id: "box-title"
       text: "Inverno 2025"
     timeout: 15000
-- takeScreenshot: screenshots/08a_deeplink_inverno
+- takeScreenshot: screenshots/08b_deeplink_boxly_legacy
 # Da non loggato: login poi apre la scatola
 - launchApp:
     clearState: true
-- openLink: boxly://box/11111111-1111-1111-1111-000000000002
+- openLink: stivo://box/11111111-1111-1111-1111-000000000002
 - tapOn:
     text: "(Open|Apri)"
     optional: true
@@ -35,4 +51,4 @@ tags: [deeplink]
       id: "box-title"
       text: "Estate"
     timeout: 20000
-- takeScreenshot: screenshots/08b_deeplink_after_login
+- takeScreenshot: screenshots/08c_deeplink_after_login

@@ -6,6 +6,7 @@ import type {
   Item,
   ItemEvent,
   ItemSearchResult,
+  ItemType,
   Profile,
   ShareRole,
 } from '@shared/types';
@@ -80,8 +81,9 @@ export async function moveItem(itemId: string, toBoxId: string): Promise<Result<
   return wrap(data, error);
 }
 
-export async function searchItems(query: string): Promise<Result<ItemSearchResult[]>> {
-  const { data, error } = await supabase.rpc('search_items', { p_query: query });
+/** Ricerca (CONTRACT v2.2): testo e/o tipo. Query vuota + tipo = tutti gli oggetti di quel tipo. */
+export async function searchItems(query: string, type: ItemType | null = null): Promise<Result<ItemSearchResult[]>> {
+  const { data, error } = await supabase.rpc('search_items', { p_query: query, p_type: type });
   return wrap(data ?? [], error);
 }
 

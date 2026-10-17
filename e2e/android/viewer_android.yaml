@@ -28,7 +28,7 @@ tags: [android, roles]
     id: "edit-box-button"
 - assertNotVisible:
     id: "delete-box-button"
-- takeScreenshot: screenshots/android_07_bob_viewer
+- takeScreenshot: screenshots/android_08_bob_viewer
 - back
 - tapOn:
     id: "tab-profile"

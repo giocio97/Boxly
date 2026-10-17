@@ -1,6 +1,7 @@
 import type { BoxOverview } from '@shared/types';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/components/EmptyState';
 import { ItemForm } from '@/components/ItemForm';
@@ -12,6 +13,7 @@ import { uploadItemPhoto } from '@/lib/photos';
 
 export default function NewItemScreen() {
   const { boxId } = useLocalSearchParams<{ boxId: string }>();
+  const { t } = useTranslation();
   const [box, setBox] = useState<BoxOverview | null | undefined>(boxId ? undefined : null);
   // se la foto non si carica, l'oggetto è già salvato: al nuovo tentativo si ricarica solo la foto
   const createdId = useRef<string | null>(null);
@@ -23,19 +25,20 @@ export default function NewItemScreen() {
 
   if (box === undefined) return <Loading />;
   if (!box || !canEdit(box.my_role)) {
-    return <EmptyState title="Non puoi aggiungere oggetti a questa scatola." icon="lock-closed-outline" />;
+    return <EmptyState title={t('items.form.cannotAdd')} icon="lock-closed-outline" />;
   }
 
   return (
     <>
-      <Stack.Screen options={{ title: `In ${box.name}` }} />
+      <Stack.Screen options={{ title: t('items.form.titleIn', { box: box.name }) }} />
       <ItemForm
-        submitLabel="Salva oggetto"
+        initial={{ item_type: box.default_item_type ?? 'other' }}
+        submitLabel={t('items.form.submitNew')}
         onSubmit={async (values, photo) => {
           let itemId = createdId.current;
           if (!itemId) {
             const res = await createItem({ ...values, box_id: box.id });
-            if (res.error) return errorMessage(res.error, 'Non riesco a salvare l’oggetto. Riprova.');
+            if (res.error) return errorMessage(res.error, t('items.form.saveError'));
             itemId = res.data.id;
             createdId.current = itemId;
           } else {
@@ -47,7 +50,7 @@ export default function NewItemScreen() {
               const upd = await updateItem(itemId, { photo_path: path });
               if (upd.error) throw upd.error;
             } catch {
-              return 'Oggetto salvato, ma non riesco a caricare la foto. Riprova o torna indietro: l’oggetto resta senza foto.';
+              return t('items.form.photoErrorNew');
             }
           }
           router.back();

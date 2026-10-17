@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { BoxOverview } from '@shared/types';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { radius, space, useTheme } from '@/theme';
@@ -9,6 +10,7 @@ import { Card } from './Card';
 
 export function BoxCard({ box, onPress }: { box: BoxOverview; onPress: () => void }) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const count = box.item_count ?? 0;
   return (
     <Card testID={`box-card-${box.id}`} onPress={onPress}>
@@ -21,7 +23,7 @@ export function BoxCard({ box, onPress }: { box: BoxOverview; onPress: () => voi
             {box.name}
           </AppText>
           <AppText variant="secondary" muted numberOfLines={1}>
-            {[box.location, count === 1 ? '1 oggetto' : `${count} oggetti`].filter(Boolean).join(' · ')}
+            {[box.location, t('common.itemCount', { count })].filter(Boolean).join(' · ')}
           </AppText>
           <View style={styles.badges}>
             <SeasonBadge season={box.season} />

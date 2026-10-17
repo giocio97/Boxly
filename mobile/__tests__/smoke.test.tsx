@@ -13,8 +13,11 @@ describe('smoke', () => {
     expect(screen.getByText('Aggiungi')).toBeTruthy();
   });
 
-  it('accetta solo QR Boxly', () => {
+  it('accetta solo QR Stivo (e legacy Boxly)', () => {
     expect(parseBoxQr('boxly://box/11111111-1111-1111-1111-000000000001')).toBe(
+      '11111111-1111-1111-1111-000000000001',
+    );
+    expect(parseBoxQr('stivo://box/11111111-1111-1111-1111-000000000001')).toBe(
       '11111111-1111-1111-1111-000000000001',
     );
     expect(parseBoxQr('https://example.com')).toBeNull();

@@ -1,0 +1,92 @@
+appId: com.stivo.app
+name: Scatola con tipo predefinito Libri → oggetto Libro con autore → la ricerca per autore lo trova
+tags: [item-types, search]
+---
+- evalScript: ${output.boxName = 'QA Libri ' + Date.now()}
+- evalScript: ${output.author = 'Autoreqa' + Date.now()}
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: alice@boxly.test
+      PASSWORD: password123
+# scatola con tipo predefinito Libri
+- tapOn:
+    id: "new-box-button"
+- tapOn:
+    id: "box-name-input"
+- inputText: ${output.boxName}
+- pressKey: Enter
+- scrollUntilVisible:
+    element:
+      id: "box-type-books"
+- tapOn:
+    id: "box-type-books"
+- scrollUntilVisible:
+    element:
+      id: "box-save"
+- tapOn:
+    id: "box-save"
+- extendedWaitUntil:
+    visible:
+      id: "box-title"
+    timeout: 15000
+# nuovo oggetto: il tipo arriva da default_item_type → campo autore visibile, taglia no
+- tapOn:
+    id: "add-item-button"
+- extendedWaitUntil:
+    visible:
+      id: "item-name-input"
+    timeout: 10000
+- tapOn:
+    id: "item-name-input"
+- inputText: "Le citta invisibili"
+- pressKey: Enter
+- scrollUntilVisible:
+    element:
+      id: "item-author-input"
+- assertNotVisible:
+    id: "item-size-input"
+- tapOn:
+    id: "item-author-input"
+- inputText: ${output.author}
+- pressKey: Enter
+- takeScreenshot: screenshots/10a_item_book_author
+- scrollUntilVisible:
+    element:
+      id: "item-save"
+- tapOn:
+    id: "item-save"
+- extendedWaitUntil:
+    visible:
+      id: "item-list"
+    timeout: 20000
+- assertVisible: ".*Le citta invisibili.*"
+- assertVisible:
+    id: "item-type-icon-.*"
+- takeScreenshot: screenshots/10b_box_with_book
+# ricerca per autore dalla home
+- runFlow: subflows/go_back.yaml
+- extendedWaitUntil:
+    visible:
+      id: "home-search-bar"
+    timeout: 10000
+- tapOn:
+    id: "home-search-bar"
+- extendedWaitUntil:
+    visible:
+      id: "search-input"
+    timeout: 10000
+- inputText: ${output.author}
+- extendedWaitUntil:
+    visible:
+      id: "search-result-.*"
+    timeout: 10000
+- assertVisible: ".*Le citta invisibili.*"
+# con filtro Vestiti (primo chip, sempre visibile) sparisce: il libro non è clothing
+- tapOn:
+    id: "search-type-clothing"
+- extendedWaitUntil:
+    visible:
+      id: "search-empty"
+    timeout: 10000
+- takeScreenshot: screenshots/10c_search_by_author

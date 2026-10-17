@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, type TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,6 +15,7 @@ import { space, useTheme } from '@/theme';
 export default function SignupScreen() {
   const { signUp } = useAuth();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,29 +26,29 @@ export default function SignupScreen() {
 
   async function submit() {
     if (!email.trim() || !password) {
-      setError('Inserisci email e password.');
+      setError(t('auth.missingFields'));
       return;
     }
     if (password.length < 6) {
-      setError('La password deve avere almeno 6 caratteri.');
+      setError(t('auth.signup.passwordTooShort'));
       return;
     }
     setBusy(true);
     setError(null);
     const { error: err } = await signUp(email, password, name);
     setBusy(false);
-    if (err) setError(errorMessage(err, 'Registrazione non riuscita. Riprova.'));
+    if (err) setError(errorMessage(err, t('auth.signup.failed')));
   }
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       <Screen scroll>
-        <AuthHeader subtitle="Crea il tuo account e inizia a riempire le scatole." />
+        <AuthHeader subtitle={t('auth.signup.subtitle')} />
         <Input
           testID="signup-name"
           nextRef={emailRef}
-          label="Nome"
-          placeholder="Come ti chiami?"
+          label={t('auth.signup.name')}
+          placeholder={t('auth.signup.namePlaceholder')}
           autoCapitalize="words"
           textContentType="name"
           value={name}
@@ -56,8 +58,8 @@ export default function SignupScreen() {
           ref={emailRef}
           testID="signup-email"
           nextRef={passwordRef}
-          label="Email"
-          placeholder="nome@esempio.it"
+          label={t('auth.email')}
+          placeholder={t('auth.emailPlaceholder')}
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="email-address"
@@ -69,8 +71,8 @@ export default function SignupScreen() {
           ref={passwordRef}
           testID="signup-password"
           returnKeyType="go"
-          label="Password"
-          placeholder="Almeno 6 caratteri"
+          label={t('auth.password')}
+          placeholder={t('auth.signup.passwordPlaceholder')}
           secureTextEntry
           // niente "Password sicura automatica" di iOS: copre il campo e blocca il tap su Crea account
           textContentType={Platform.OS === 'ios' ? 'oneTimeCode' : 'newPassword'}
@@ -82,8 +84,8 @@ export default function SignupScreen() {
           onSubmitEditing={submit}
         />
         <ErrorText testID="auth-error">{error}</ErrorText>
-        <Button testID="signup-submit" title="Crea account" onPress={submit} loading={busy} />
-        <Button testID="goto-login" title="Hai già un account? Accedi" kind="ghost" onPress={() => router.replace('/login')} style={{ marginTop: space.sm }} />
+        <Button testID="signup-submit" title={t('auth.signup.submit')} onPress={submit} loading={busy} />
+        <Button testID="goto-login" title={t('auth.signup.toLogin')} kind="ghost" onPress={() => router.replace('/login')} style={{ marginTop: space.sm }} />
       </Screen>
     </SafeAreaView>
   );

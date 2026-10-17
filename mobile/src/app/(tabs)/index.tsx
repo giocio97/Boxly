@@ -1,11 +1,13 @@
 import type { BoxOverview } from '@shared/types';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { BoxCard } from '@/components/BoxCard';
-import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
+import { FAB_SPACE, FloatingActionButton } from '@/components/FloatingActionButton';
+import { HomeSearchBar } from '@/components/HomeSearchBar';
 import { ErrorText, Loading } from '@/components/Screen';
 import { listBoxes } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
@@ -13,18 +15,19 @@ import { space, useTheme } from '@/theme';
 
 export default function BoxesScreen() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [boxes, setBoxes] = useState<BoxOverview[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     const res = await listBoxes();
-    if (res.error) setError(errorMessage(res.error, 'Non riesco a caricare le scatole. Riprova.'));
+    if (res.error) setError(errorMessage(res.error, t('boxes.list.loadError')));
     else {
       setError(null);
       setBoxes(res.data);
     }
-  }, []);
+  }, [t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -50,27 +53,24 @@ export default function BoxesScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.primary} />}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Button
-              testID="new-box-button"
-              title="Nuova scatola"
-              icon="add"
-              onPress={() => router.push('/box/new')}
-            />
+            <HomeSearchBar placeholder={t('boxes.list.searchPlaceholder')} onPress={() => router.push('/search')} />
             <ErrorText>{error}</ErrorText>
           </View>
         }
         ListEmptyComponent={
           boxes ? (
-            <EmptyState
-              testID="empty-boxes"
-              title="Ancora nessuna scatola."
-              message="Creane una e inizia a riempirla."
-            />
+            <EmptyState testID="empty-boxes" title={t('boxes.empty.title')} message={t('boxes.empty.message')} />
           ) : null
         }
         renderItem={({ item }) => (
           <BoxCard box={item} onPress={() => router.push({ pathname: '/box/[id]', params: { id: item.id } })} />
         )}
+      />
+      <FloatingActionButton
+        testID="new-box-button"
+        title={t('boxes.list.newBox')}
+        icon="add"
+        onPress={() => router.push('/box/new')}
       />
     </View>
   );
@@ -78,6 +78,6 @@ export default function BoxesScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  content: { padding: space.lg, gap: space.md, flexGrow: 1 },
+  content: { padding: space.lg, paddingBottom: space.lg + FAB_SPACE, gap: space.md, flexGrow: 1 },
   header: { gap: space.md, marginBottom: space.xs },
 });

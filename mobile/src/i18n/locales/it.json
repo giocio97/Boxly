@@ -1,0 +1,274 @@
+{
+  "common": {
+    "cancel": "Annulla",
+    "confirm": "Conferma",
+    "save": "Salva modifiche",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "open": "Apri",
+    "tagline": "Sai sempre cosa c’è dentro.",
+    "itemCount_one": "{{count}} oggetto",
+    "itemCount_other": "{{count}} oggetti",
+    "boxUnavailable": "Scatola non disponibile"
+  },
+  "nav": {
+    "boxes": "Le mie scatole",
+    "newBox": "Nuova scatola",
+    "box": "Scatola",
+    "editBox": "Modifica scatola",
+    "qr": "Etichetta QR",
+    "share": "Condivisione",
+    "history": "Storico",
+    "newItem": "Nuovo oggetto",
+    "item": "Oggetto",
+    "editItem": "Modifica oggetto",
+    "search": "Cerca",
+    "scan": "Scansiona QR",
+    "profile": "Profilo"
+  },
+  "tabs": {
+    "boxes": "Scatole",
+    "scan": "Scansiona",
+    "profile": "Profilo"
+  },
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "nome@esempio.it",
+    "password": "Password",
+    "missingFields": "Inserisci email e password.",
+    "login": {
+      "passwordPlaceholder": "La tua password",
+      "submit": "Accedi",
+      "toSignup": "Non hai un account? Registrati",
+      "failed": "Accesso non riuscito. Riprova.",
+      "footer": "I tuoi oggetti, sempre a portata di QR."
+    },
+    "signup": {
+      "subtitle": "Crea il tuo account e inizia a riempire le scatole.",
+      "name": "Nome",
+      "namePlaceholder": "Come ti chiami?",
+      "passwordPlaceholder": "Almeno 6 caratteri",
+      "passwordTooShort": "La password deve avere almeno 6 caratteri.",
+      "submit": "Crea account",
+      "toLogin": "Hai già un account? Accedi",
+      "failed": "Registrazione non riuscita. Riprova."
+    }
+  },
+  "boxes": {
+    "list": {
+      "loadError": "Non riesco a caricare le scatole. Riprova.",
+      "searchPlaceholder": "Cerca un oggetto nelle scatole…",
+      "newBox": "Nuova scatola"
+    },
+    "empty": {
+      "title": "Ancora nessuna scatola.",
+      "message": "Creane una e inizia a riempirla."
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Es. Inverno 2025",
+      "location": "Dove si trova",
+      "locationPlaceholder": "Es. Cantina, armadio camera",
+      "notes": "Note",
+      "notesPlaceholder": "Qualcosa da ricordare?",
+      "defaultType": "Cosa ci metti di solito",
+      "defaultTypeNone": "Di tutto",
+      "nameRequired": "Dai un nome alla scatola.",
+      "nameTooLong": "Il nome può avere al massimo 80 caratteri.",
+      "create": "Crea scatola",
+      "createError": "Non riesco a creare la scatola. Riprova.",
+      "saveError": "Non riesco a salvare. Riprova.",
+      "cannotEdit": "Non puoi modificare questa scatola."
+    },
+    "detail": {
+      "loadError": "Non riesco a caricare la scatola. Riprova.",
+      "notFound": "Questa scatola non esiste o non è condivisa con te.",
+      "backToBoxes": "Torna alle scatole",
+      "sharedBy": "Condivisa da {{email}}",
+      "qr": "QR",
+      "share": "Condividi",
+      "history": "Storico",
+      "addItem": "Aggiungi",
+      "emptyTitle": "La scatola è vuota.",
+      "emptyEditable": "Aggiungi il primo oggetto con una foto.",
+      "emptyReadonly": "Qui non c’è ancora niente.",
+      "deleteTitle": "Eliminare la scatola?",
+      "deleteMessage": "\"{{name}}\" e tutti i suoi oggetti verranno eliminati. Non si può annullare.",
+      "deleteError": "Non riesco a eliminare la scatola. Riprova."
+    },
+    "qr": {
+      "a11y": "QR della scatola {{name}}",
+      "hint": "Stampa l'etichetta (6×6 cm) e attaccala sulla scatola: inquadrala con {{app}} per vedere cosa c'è dentro.",
+      "print": "Stampa l'etichetta",
+      "share": "Condividi l'etichetta",
+      "printError": "Non riesco ad aprire la stampa. Riprova o condividi l’etichetta.",
+      "shareUnavailable": "La condivisione non è disponibile su questo dispositivo.",
+      "shareError": "Non riesco a preparare l’etichetta. Riprova.",
+      "shareTitle": "Etichetta {{name}}",
+      "fileName": "etichetta",
+      "fileFallback": "scatola"
+    },
+    "share": {
+      "title": "Condividi con qualcuno",
+      "email": "Email",
+      "emailPlaceholder": "email della persona",
+      "whatCanDo": "Cosa può fare",
+      "submit": "Condividi",
+      "emailRequired": "Scrivi l’email della persona con cui condividere.",
+      "error": "Non riesco a condividere la scatola. Riprova.",
+      "success": "Fatto! {{email}} ora vede la scatola.",
+      "ownerOnly": "Solo il proprietario può aggiungere o togliere persone.",
+      "whoSees": "Chi la vede",
+      "onlyYou": "Per ora la vedi solo tu.",
+      "leave": "Esci",
+      "revoke": "Revoca",
+      "leaveTitle": "Uscire dalla scatola?",
+      "revokeTitle": "Togliere l’accesso?",
+      "leaveMessage": "Non vedrai più questa scatola finché non te la ricondividono.",
+      "revokeMessage": "{{email}} non vedrà più questa scatola.",
+      "revokeError": "Non riesco a togliere l’accesso. Riprova."
+    },
+    "history": {
+      "loadError": "Non riesco a caricare lo storico. Riprova.",
+      "emptyTitle": "Ancora nessun movimento.",
+      "emptyMessage": "Qui vedrai cosa entra, esce e cambia nella scatola.",
+      "arrivedFrom": "arrivato da {{box}}",
+      "arrivedFromOther": "arrivato da un’altra scatola",
+      "movedTo": "spostato in {{box}}",
+      "movedToOther": "spostato in un’altra scatola",
+      "byYou": "da te",
+      "byPerson": "da {{name}}"
+    }
+  },
+  "items": {
+    "form": {
+      "photoHint": "Aggiungi una foto: ti aiuta a riconoscerlo al volo.",
+      "takePhoto": "Scatta",
+      "fromLibrary": "Dalla libreria",
+      "type": "Tipo",
+      "name": "Nome",
+      "namePlaceholder": "Es. Maglione blu",
+      "category": "Categoria",
+      "categoryPlaceholder": "Es. Maglieria",
+      "brand": "Marca",
+      "brandPlaceholder": "Es. Uniqlo",
+      "color": "Colore",
+      "colorPlaceholder": "Es. Blu",
+      "size": "Taglia",
+      "sizePlaceholder": "Es. M",
+      "author": "Autore",
+      "authorPlaceholder": "Es. Umberto Eco",
+      "model": "Modello",
+      "modelPlaceholder": "Es. Paperwhite 11",
+      "serial": "Numero di serie",
+      "serialPlaceholder": "Es. G000ABC123",
+      "notes": "Note",
+      "notesPlaceholder": "Qualcosa da ricordare?",
+      "nameRequired": "Dai un nome all’oggetto.",
+      "submitNew": "Salva oggetto",
+      "saveError": "Non riesco a salvare l’oggetto. Riprova.",
+      "photoErrorNew": "Oggetto salvato, ma non riesco a caricare la foto. Riprova o torna indietro: l’oggetto resta senza foto.",
+      "photoErrorEdit": "Modifiche salvate, ma non riesco a caricare la foto. Riprova o annulla.",
+      "cannotAdd": "Non puoi aggiungere oggetti a questa scatola.",
+      "titleIn": "In {{box}}"
+    },
+    "detail": {
+      "notFound": "Oggetto non trovato",
+      "notFoundMessage": "Forse è stato tolto dalla scatola.",
+      "boxA11y": "Scatola {{name}}",
+      "foundIn": "Si trova in",
+      "type": "Tipo",
+      "updated": "Aggiornato",
+      "move": "Sposta in un'altra scatola",
+      "moveWhere": "Dove lo sposti?",
+      "noTargets": "Non hai altre scatole in cui spostarlo.",
+      "moveError": "Non riesco a spostarlo. Riprova.",
+      "deleteTitle": "Eliminare l'oggetto?",
+      "deleteMessage": "\"{{name}}\" verrà tolto dalla scatola.",
+      "deleteError": "Non riesco a eliminarlo. Riprova."
+    },
+    "inBox": "In {{box}}"
+  },
+  "search": {
+    "placeholder": "Cerca un oggetto: maglione, blu, Uniqlo…",
+    "all": "Tutti",
+    "error": "Non riesco a cercare adesso. Riprova.",
+    "startTitle": "Cosa stai cercando?",
+    "startMessage": "Scrivi nome, marca, colore o autore, oppure scegli un tipo: ti dico in che scatola si trova.",
+    "emptyTitle": "Nessun oggetto trovato.",
+    "emptyMessage": "Prova con un'altra parola."
+  },
+  "scan": {
+    "notOurs": "Questo QR non è di {{app}}",
+    "manualPlaceholder": "…oppure incolla il codice (stivo://box/…)",
+    "permissionTitle": "Serve la fotocamera",
+    "permissionMessage": "Per leggere il QR sulla scatola consenti a {{app}} di usare la fotocamera.",
+    "allowCamera": "Consenti fotocamera",
+    "hint": "Inquadra il QR sull'etichetta della scatola."
+  },
+  "profile": {
+    "language": "Lingua",
+    "logout": "Esci",
+    "footer": "{{app}} · Sai sempre cosa c'è dentro."
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English"
+  },
+  "photos": {
+    "prepareError": "Non riesco a preparare la foto. Riprova.",
+    "libraryPermission": "Per scegliere una foto consenti a {{app}} di accedere alla libreria nelle Impostazioni.",
+    "libraryError": "Non riesco ad aprire la libreria. Riprova.",
+    "cameraPermission": "Per scattare una foto consenti a {{app}} di usare la fotocamera nelle Impostazioni.",
+    "cameraUnavailable": "La fotocamera non è disponibile su questo dispositivo. Scegli una foto dalla libreria."
+  },
+  "itemTypes": {
+    "clothing": "Vestiti",
+    "shoes_accessories": "Scarpe e accessori",
+    "books": "Libri",
+    "electronics": "Elettronica",
+    "home_kitchen": "Casa e cucina",
+    "toys_games": "Giochi",
+    "documents": "Documenti",
+    "other": "Altro"
+  },
+  "seasons": {
+    "label": "Stagione",
+    "spring": "Primavera",
+    "summer": "Estate",
+    "autumn": "Autunno",
+    "winter": "Inverno",
+    "all": "Tutto l'anno"
+  },
+  "roles": {
+    "owner": "Proprietario",
+    "editor": "Può modificare",
+    "viewer": "Solo lettura"
+  },
+  "events": {
+    "added": "aggiunto",
+    "updated": "modificato",
+    "moved": "spostato",
+    "removed": "tolto"
+  },
+  "errors": {
+    "generic": "Qualcosa è andato storto. Riprova.",
+    "invalidCredentials": "Email o password non corretti.",
+    "alreadyRegistered": "Esiste già un account con questa email. Prova ad accedere.",
+    "weakPassword": "La password deve avere almeno 6 caratteri.",
+    "invalidEmail": "Controlla l’indirizzo email.",
+    "network": "Non riesco a collegarmi. Controlla la connessione e riprova.",
+    "permission": "Non hai i permessi per farlo.",
+    "rpc": {
+      "not_owner": "Solo il proprietario della scatola può farlo.",
+      "forbidden": "Non hai i permessi per modificare una delle due scatole.",
+      "user_not_found": "Nessun utente {{app}} con questa email. Controlla e riprova.",
+      "cannot_share_with_self": "Questa scatola è già tua: non serve condividerla con te.",
+      "invalid_role": "Scegli se può solo guardare o anche modificare.",
+      "invalid_type": "Questo tipo di oggetto non esiste. Scegline uno dalla lista."
+    }
+  },
+  "label": {
+    "a11y": "Etichetta"
+  }
+}

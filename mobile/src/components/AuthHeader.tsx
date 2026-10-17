@@ -1,12 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { APP_NAME } from '@/lib/brand';
 import { radius, space, useTheme } from '@/theme';
 import { AppText } from './AppText';
 
-/** Wordmark Boxly + payoff, per le schermate di accesso. */
+/** Wordmark del brand + payoff, per le schermate di accesso. */
 export function AuthHeader({ subtitle }: { subtitle?: string }) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   return (
     <View style={styles.wrap}>
       <View style={[styles.logo, { backgroundColor: colors.primary }]}>
@@ -16,9 +19,9 @@ export function AuthHeader({ subtitle }: { subtitle?: string }) {
         </View>
       </View>
       <AppText variant="title" style={styles.word}>
-        Boxly
+        {APP_NAME}
       </AppText>
-      <AppText muted>{subtitle ?? 'Sai sempre cosa c’è dentro.'}</AppText>
+      <AppText muted>{subtitle ?? t('common.tagline')}</AppText>
     </View>
   );
 }

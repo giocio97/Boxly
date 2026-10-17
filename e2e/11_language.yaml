@@ -1,0 +1,77 @@
+appId: com.stivo.app
+name: Cambio lingua dal profilo (Italiano → English → Italiano), immediato e senza riavvio
+tags: [i18n]
+---
+- runFlow:
+    file: subflows/fresh_login.yaml
+    env:
+      EMAIL: alice@boxly.test
+      PASSWORD: password123
+- tapOn:
+    id: "tab-profile"
+- extendedWaitUntil:
+    visible:
+      id: "lang-en"
+    timeout: 10000
+# testo noto: pulsante di logout (it "Esci" / en "Log out")
+- assertVisible:
+    id: "logout-button"
+    text: ".*Esci.*"
+- tapOn:
+    id: "lang-en"
+- extendedWaitUntil:
+    visible:
+      id: "logout-button"
+      text: ".*Log out.*"
+    timeout: 5000
+- takeScreenshot: screenshots/11a_profile_english
+# la lingua vale in tutta l'app: Scatole in inglese
+- tapOn:
+    id: "tab-boxes"
+- extendedWaitUntil:
+    visible:
+      id: "box-list"
+    timeout: 10000
+- takeScreenshot: screenshots/11b_boxes_english
+# la scelta sopravvive al riavvio (AsyncStorage stivo.lang)
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "(login-submit|tab-profile)"
+    timeout: 20000
+# se la sessione non è ripristinata, la schermata di login deve essere già in inglese
+- runFlow:
+    when:
+      visible:
+        id: "login-submit"
+    commands:
+      - assertVisible:
+          id: "login-submit"
+          text: ".*Log in.*"
+      - takeScreenshot: screenshots/11c_login_english_after_restart
+      - runFlow:
+          file: subflows/login.yaml
+          env:
+            EMAIL: alice@boxly.test
+            PASSWORD: password123
+      - extendedWaitUntil:
+          visible:
+            id: "tab-profile"
+          timeout: 20000
+- tapOn:
+    id: "tab-profile"
+- extendedWaitUntil:
+    visible:
+      id: "logout-button"
+      text: ".*Log out.*"
+    timeout: 10000
+# ritorno all'italiano
+- tapOn:
+    id: "lang-it"
+- extendedWaitUntil:
+    visible:
+      id: "logout-button"
+      text: ".*Esci.*"
+    timeout: 5000
+- takeScreenshot: screenshots/11d_profile_italiano

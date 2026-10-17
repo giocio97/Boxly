@@ -1,5 +1,5 @@
 appId: host.exp.exponent
-name: "Android (Expo Go) smoke: login → lista → dettaglio → QR → ricerca → logout"
+name: "Android (Expo Go) smoke v2: login → lista (tab centrale) → dettaglio → QR → barra ricerca + filtro tipo → lingua → logout"
 tags: [android, smoke]
 ---
 - runFlow: subflows/open_expo.yaml
@@ -36,6 +36,16 @@ tags: [android, smoke]
     id: "box-card-11111111-1111-1111-1111-000000000002"
 - assertNotVisible:
     id: "box-card-11111111-1111-1111-1111-000000000003"
+- assertVisible:
+    id: "tab-boxes"
+- assertVisible:
+    id: "tab-scan"
+- assertNotVisible:
+    id: "tab-search"
+- assertVisible:
+    id: "home-search-bar"
+- assertVisible:
+    id: "new-box-button"
 - takeScreenshot: screenshots/android_02_box_list
 # dettaglio
 - tapOn:
@@ -49,7 +59,10 @@ tags: [android, smoke]
     id: "role-badge"
 - assertVisible:
     id: "add-item-button"
-- assertVisible: ".*Maglione blu.*"
+- assertVisible:
+    id: "item-row-22222222-2222-2222-2222-000000000001"
+- assertVisible:
+    id: "item-type-icon-22222222-2222-2222-2222-000000000001"
 - takeScreenshot: screenshots/android_03_box_detail
 # QR
 - tapOn:
@@ -63,13 +76,13 @@ tags: [android, smoke]
 - takeScreenshot: screenshots/android_04_qr
 - back
 - back
-# ricerca
+# ricerca dalla barra della home
 - extendedWaitUntil:
     visible:
-      id: "box-list"
+      id: "home-search-bar"
     timeout: 10000
 - tapOn:
-    id: "tab-search"
+    id: "home-search-bar"
     retryTapIfNoChange: true
 - extendedWaitUntil:
     visible:
@@ -80,14 +93,52 @@ tags: [android, smoke]
 - inputText: "maglione"
 - extendedWaitUntil:
     visible:
-      id: "search-result-.*"
+      id: "search-result-22222222-2222-2222-2222-000000000001"
     timeout: 15000
-- assertVisible: ".*Maglione blu.*"
 - assertVisible: ".*Inverno 2025.*"
+- hideKeyboard
+- tapOn:
+    id: "search-type-clothing"
+- extendedWaitUntil:
+    visible:
+      id: "search-result-22222222-2222-2222-2222-000000000001"
+    timeout: 10000
 - takeScreenshot: screenshots/android_05_search
-# logout
+- back
+# tab centrale Scatole riporta alla lista
 - tapOn:
     id: "tab-profile"
+- tapOn:
+    id: "tab-boxes"
+- extendedWaitUntil:
+    visible:
+      id: "box-list"
+    timeout: 10000
+# lingua: il dispositivo è en-US → l'app parte in inglese; passa a Italiano e torna
+- tapOn:
+    id: "tab-profile"
+- extendedWaitUntil:
+    visible:
+      id: "lang-it"
+    timeout: 10000
+- tapOn:
+    id: "lang-en"
+- extendedWaitUntil:
+    visible:
+      id: "logout-button"
+      text: ".*Log out.*"
+    timeout: 5000
+- tapOn:
+    id: "lang-it"
+- extendedWaitUntil:
+    visible:
+      id: "logout-button"
+      text: ".*Esci.*"
+    timeout: 5000
+- takeScreenshot: screenshots/android_06_lang_it
+- tapOn:
+    id: "lang-en"
+# logout
 - assertVisible:
     id: "profile-email"
     text: "alice@boxly.test"
@@ -97,4 +148,4 @@ tags: [android, smoke]
     visible:
       id: "login-email"
     timeout: 15000
-- takeScreenshot: screenshots/android_06_logged_out
+- takeScreenshot: screenshots/android_07_logged_out

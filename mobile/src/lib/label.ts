@@ -2,6 +2,9 @@
 import { create as createQr } from 'qrcode/lib/core/qrcode';
 import type { BoxOverview } from '@shared/types';
 
+import i18n from '@/i18n';
+
+import { APP_NAME } from './brand';
 import { seasonLabel } from './labels';
 import { boxQrValue } from './qr';
 
@@ -31,13 +34,13 @@ function esc(s: string): string {
 
 /**
  * Etichetta 6×6 cm (BRAND.md): QR al centro, nome in grassetto, luogo e stagione in piccolo,
- * wordmark "Boxly" in basso. `pageIsLabel` = la pagina è grande quanto l'etichetta (PDF da condividere).
+ * wordmark del brand in basso. `pageIsLabel` = la pagina è grande quanto l'etichetta (PDF da condividere).
  */
 export function labelHtml(box: Pick<BoxOverview, 'id' | 'name' | 'location' | 'season'>, pageIsLabel: boolean): string {
   const meta = [box.location, box.season ? seasonLabel[box.season] : null].filter(Boolean).join(' · ');
   const page = pageIsLabel ? '@page { size: 6cm 6cm; margin: 0; }' : '@page { size: A4; margin: 1.5cm; }';
   return `<!doctype html>
-<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<html lang="${esc(i18n.language || 'it')}"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <style>
 ${page}
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -55,7 +58,7 @@ body { font-family: Inter, -apple-system, Helvetica, Arial, sans-serif; color: #
   <div class="qr">${qrSvg(boxQrValue(box.id), '3.6cm')}</div>
   <div class="name">${esc(box.name)}</div>
   <div class="meta">${esc(meta)}</div>
-  <div class="brand">Boxly</div>
+  <div class="brand">${esc(APP_NAME)}</div>
 </div></body></html>`;
 }
 

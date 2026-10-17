@@ -1,6 +1,7 @@
 import type { BoxOverview, BoxShareMember, ShareRole } from '@shared/types';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
@@ -15,13 +16,13 @@ import { ChoiceChip } from '@/components/SeasonPicker';
 import { getBox, listShareMembers, revokeShare, shareBox } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { errorMessage } from '@/lib/errors';
-import { shareRoleLabel } from '@/lib/labels';
 import { space, useTheme } from '@/theme';
 
 export default function ShareScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { session } = useAuth();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const me = session?.user.id;
   const [box, setBox] = useState<BoxOverview | null | undefined>(undefined);
   const [members, setMembers] = useState<BoxShareMember[]>([]);
@@ -46,7 +47,7 @@ export default function ShareScreen() {
 
   async function submit() {
     if (!email.trim()) {
-      setError('Scrivi l’email della persona con cui condividere.');
+      setError(t('boxes.share.emailRequired'));
       return;
     }
     setBusy(true);
@@ -55,10 +56,10 @@ export default function ShareScreen() {
     const res = await shareBox(id, email, role);
     setBusy(false);
     if (res.error) {
-      setError(errorMessage(res.error, 'Non riesco a condividere la scatola. Riprova.'));
+      setError(errorMessage(res.error, t('boxes.share.error')));
       return;
     }
-    setNotice(`Fatto! ${email.trim()} ora vede la scatola.`);
+    setNotice(t('boxes.share.success', { email: email.trim() }));
     setEmail('');
     await load();
   }
@@ -71,7 +72,7 @@ export default function ShareScreen() {
     const leaving = toRevoke.user_id === me;
     setToRevoke(null);
     if (res.error) {
-      setError(errorMessage(res.error, 'Non riesco a togliere l’accesso. Riprova.'));
+      setError(errorMessage(res.error, t('boxes.share.revokeError')));
       return;
     }
     if (leaving) {
@@ -82,7 +83,7 @@ export default function ShareScreen() {
   }
 
   if (box === undefined) return <Loading />;
-  if (!box) return <EmptyState title="Scatola non disponibile" icon="lock-closed-outline" />;
+  if (!box) return <EmptyState title={t('common.boxUnavailable')} icon="lock-closed-outline" />;
   const isOwner = box.my_role === 'owner';
 
   return (
@@ -90,11 +91,11 @@ export default function ShareScreen() {
       <AppText variant="section">{box.name}</AppText>
       {isOwner ? (
         <Card style={styles.form}>
-          <AppText variant="bodyStrong">Condividi con qualcuno</AppText>
+          <AppText variant="bodyStrong">{t('boxes.share.title')}</AppText>
           <Input
             testID="share-email-input"
-            label="Email"
-            placeholder="email della persona"
+            label={t('boxes.share.email')}
+            placeholder={t('boxes.share.emailPlaceholder')}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
@@ -102,18 +103,18 @@ export default function ShareScreen() {
             onChangeText={setEmail}
           />
           <AppText variant="label" muted>
-            Cosa può fare
+            {t('boxes.share.whatCanDo')}
           </AppText>
           <View style={styles.row}>
             <ChoiceChip
               testID="share-role-viewer"
-              label={shareRoleLabel.viewer}
+              label={t('roles.viewer')}
               selected={role === 'viewer'}
               onPress={() => setRole('viewer')}
             />
             <ChoiceChip
               testID="share-role-editor"
-              label={shareRoleLabel.editor}
+              label={t('roles.editor')}
               selected={role === 'editor'}
               onPress={() => setRole('editor')}
             />
@@ -124,17 +125,17 @@ export default function ShareScreen() {
               {notice}
             </AppText>
           ) : null}
-          <Button testID="share-submit" title="Condividi" icon="person-add-outline" loading={busy} onPress={submit} />
+          <Button testID="share-submit" title={t('boxes.share.submit')} icon="person-add-outline" loading={busy} onPress={submit} />
         </Card>
       ) : (
         <>
-          <AppText muted>Solo il proprietario può aggiungere o togliere persone.</AppText>
+          <AppText muted>{t('boxes.share.ownerOnly')}</AppText>
           <ErrorText testID="share-error">{error}</ErrorText>
         </>
       )}
 
       <AppText variant="section" style={styles.section}>
-        Chi la vede
+        {t('boxes.share.whoSees')}
       </AppText>
       <Card testID="share-owner">
         <AppText variant="bodyStrong">{box.owner_email}</AppText>
@@ -142,7 +143,7 @@ export default function ShareScreen() {
       </Card>
       {members.length === 0 ? (
         <AppText testID="share-empty" muted>
-          Per ora la vedi solo tu.
+          {t('boxes.share.onlyYou')}
         </AppText>
       ) : (
         members.map((m) => {
@@ -162,7 +163,7 @@ export default function ShareScreen() {
                 {canRevoke ? (
                   <Button
                     testID={`revoke-${m.user_id}`}
-                    title={m.user_id === me ? 'Esci' : 'Revoca'}
+                    title={m.user_id === me ? t('boxes.share.leave') : t('boxes.share.revoke')}
                     kind="danger"
                     small
                     onPress={() => setToRevoke(m)}
@@ -176,13 +177,13 @@ export default function ShareScreen() {
 
       <ConfirmDialog
         visible={!!toRevoke}
-        title={toRevoke?.user_id === me ? 'Uscire dalla scatola?' : 'Togliere l’accesso?'}
+        title={toRevoke?.user_id === me ? t('boxes.share.leaveTitle') : t('boxes.share.revokeTitle')}
         message={
           toRevoke?.user_id === me
-            ? 'Non vedrai più questa scatola finché non te la ricondividono.'
-            : `${toRevoke?.email ?? ''} non vedrà più questa scatola.`
+            ? t('boxes.share.leaveMessage')
+            : t('boxes.share.revokeMessage', { email: toRevoke?.email ?? '' })
         }
-        confirmLabel={toRevoke?.user_id === me ? 'Esci' : 'Revoca'}
+        confirmLabel={toRevoke?.user_id === me ? t('boxes.share.leave') : t('boxes.share.revoke')}
         destructive
         loading={busy}
         onConfirm={revoke}

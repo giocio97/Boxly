@@ -1,4 +1,4 @@
-appId: com.boxly.app
+appId: com.stivo.app
 name: Crea scatola, aggiungi oggetto con foto dalla libreria, mostra QR
 tags: [core, smoke]
 ---

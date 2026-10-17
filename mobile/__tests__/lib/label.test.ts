@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+import en from '@/i18n/locales/en.json';
 import { LABEL_PT, labelHtml, qrSvg } from '@/lib/label';
 
 const BOX = { id: '11111111-1111-1111-1111-000000000001', name: 'Inverno 2025', location: 'Cantina', season: 'winter' as const };
@@ -11,7 +13,8 @@ describe('etichetta QR stampabile (BRAND.md)', () => {
     const html = labelHtml(BOX, true);
     expect(html).toContain('Inverno 2025');
     expect(html).toContain('Cantina · Inverno');
-    expect(html).toContain('>Boxly<');
+    expect(html).toContain('>Stivo<');
+    expect(html).not.toMatch(/Boxly/);
     expect(html).toContain('<svg');
     expect(html).toContain('size: 6cm 6cm');
   });
@@ -33,9 +36,18 @@ describe('etichetta QR stampabile (BRAND.md)', () => {
   });
 
   it('QR deterministico e diverso per scatole diverse', () => {
-    const a = qrSvg('boxly://box/' + BOX.id, '3cm');
-    expect(qrSvg('boxly://box/' + BOX.id, '3cm')).toBe(a);
-    expect(qrSvg('boxly://box/11111111-1111-1111-1111-000000000002', '3cm')).not.toBe(a);
+    const a = qrSvg('stivo://box/' + BOX.id, '3cm');
+    expect(qrSvg('stivo://box/' + BOX.id, '3cm')).toBe(a);
+    expect(qrSvg('stivo://box/11111111-1111-1111-1111-000000000002', '3cm')).not.toBe(a);
     expect(a).toMatch(/^<svg[^>]+viewBox="0 0 (\d+) \1"/);
+  });
+
+  it('in inglese la stagione dell’etichetta è tradotta (v2.3)', async () => {
+    await i18n.changeLanguage('en');
+    try {
+      expect(labelHtml(BOX, true)).toContain(`Cantina · ${en.seasons.winter}`);
+    } finally {
+      await i18n.changeLanguage('it');
+    }
   });
 });

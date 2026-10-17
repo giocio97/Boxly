@@ -1,4 +1,4 @@
--- Boxly — dati demo (CONTRACT §5). Password di tutti: password123
+-- Stivo — dati demo (CONTRACT §5 + v2.2). Password di tutti: password123
 
 -- Utenti (login reale: password bcrypt, token '' non null, identity email)
 insert into auth.users (
@@ -27,10 +27,10 @@ select u.id, u.id, u.id::text, 'email',
                 '00000000-0000-0000-0000-00000000000c');
 
 -- Scatole
-insert into public.boxes (id, owner_id, name, location, season) values
-  ('11111111-1111-1111-1111-000000000001', '00000000-0000-0000-0000-00000000000a', 'Inverno 2025', 'Cantina',         'winter'),
-  ('11111111-1111-1111-1111-000000000002', '00000000-0000-0000-0000-00000000000a', 'Estate',       'Armadio camera',  'summer'),
-  ('11111111-1111-1111-1111-000000000003', '00000000-0000-0000-0000-00000000000b', 'Libri',        'Garage',          'all');
+insert into public.boxes (id, owner_id, name, location, season, default_item_type) values
+  ('11111111-1111-1111-1111-000000000001', '00000000-0000-0000-0000-00000000000a', 'Inverno 2025', 'Cantina',         'winter', 'clothing'),
+  ('11111111-1111-1111-1111-000000000002', '00000000-0000-0000-0000-00000000000a', 'Estate',       'Armadio camera',  'summer', 'clothing'),
+  ('11111111-1111-1111-1111-000000000003', '00000000-0000-0000-0000-00000000000b', 'Libri',        'Garage',          'all',    'books');
 
 insert into public.box_shares (box_id, user_id, role) values
   ('11111111-1111-1111-1111-000000000001', '00000000-0000-0000-0000-00000000000b', 'viewer'),
@@ -39,16 +39,19 @@ insert into public.box_shares (box_id, user_id, role) values
 -- Oggetti: impostiamo l'utente corrente così lo storico ('added') ha actor_id.
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', false);
 
-insert into public.items (id, box_id, name, brand, color, category, size, season, created_by) values
-  ('22222222-2222-2222-2222-000000000001', '11111111-1111-1111-1111-000000000001', 'Maglione blu',        'Uniqlo',         'blu',    'Abbigliamento', 'M',  'winter', '00000000-0000-0000-0000-00000000000a'),
-  ('22222222-2222-2222-2222-000000000002', '11111111-1111-1111-1111-000000000001', 'Piumino nero',        'The North Face', 'nero',   'Abbigliamento', null, 'winter', '00000000-0000-0000-0000-00000000000a'),
-  ('22222222-2222-2222-2222-000000000003', '11111111-1111-1111-1111-000000000001', 'Sciarpa grigia',      null,             'grigio', 'Accessori',     null, 'winter', '00000000-0000-0000-0000-00000000000a'),
-  ('22222222-2222-2222-2222-000000000004', '11111111-1111-1111-1111-000000000002', 'Costume rosso',       null,             'rosso',  'Mare',          null, 'summer', '00000000-0000-0000-0000-00000000000a'),
-  ('22222222-2222-2222-2222-000000000005', '11111111-1111-1111-1111-000000000002', 'Camicia lino bianca', null,             'bianco', 'Abbigliamento', null, 'summer', '00000000-0000-0000-0000-00000000000a');
+insert into public.items (id, box_id, name, brand, color, category, size, season, item_type, created_by) values
+  ('22222222-2222-2222-2222-000000000001', '11111111-1111-1111-1111-000000000001', 'Maglione blu',        'Uniqlo',         'blu',    'Abbigliamento', 'M',  'winter', 'clothing', '00000000-0000-0000-0000-00000000000a'),
+  ('22222222-2222-2222-2222-000000000002', '11111111-1111-1111-1111-000000000001', 'Piumino nero',        'The North Face', 'nero',   'Abbigliamento', null, 'winter', 'clothing', '00000000-0000-0000-0000-00000000000a'),
+  ('22222222-2222-2222-2222-000000000003', '11111111-1111-1111-1111-000000000001', 'Sciarpa grigia',      null,             'grigio', 'Accessori',     null, 'winter', 'clothing', '00000000-0000-0000-0000-00000000000a'),
+  ('22222222-2222-2222-2222-000000000004', '11111111-1111-1111-1111-000000000002', 'Costume rosso',       null,             'rosso',  'Mare',          null, 'summer', 'clothing', '00000000-0000-0000-0000-00000000000a'),
+  ('22222222-2222-2222-2222-000000000005', '11111111-1111-1111-1111-000000000002', 'Camicia lino bianca', null,             'bianco', 'Abbigliamento', null, 'summer', 'clothing', '00000000-0000-0000-0000-00000000000a');
 
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', false);
 
-insert into public.items (id, box_id, name, category, season, created_by) values
-  ('22222222-2222-2222-2222-000000000006', '11111111-1111-1111-1111-000000000003', 'Libro "Il nome della rosa"', 'Libri', 'all', '00000000-0000-0000-0000-00000000000b');
+insert into public.items (id, box_id, name, category, season, item_type, attributes, created_by) values
+  ('22222222-2222-2222-2222-000000000006', '11111111-1111-1111-1111-000000000003', 'Libro "Il nome della rosa"', 'Libri', 'all', 'books',
+   '{"author":"Umberto Eco"}', '00000000-0000-0000-0000-00000000000b'),
+  ('22222222-2222-2222-2222-000000000007', '11111111-1111-1111-1111-000000000003', 'Kindle Paperwhite', null, null, 'electronics',
+   '{"model":"Paperwhite 11","serial":"G000ABC123"}', '00000000-0000-0000-0000-00000000000b');
 
 select set_config('request.jwt.claims', '', false);

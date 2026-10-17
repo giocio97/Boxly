@@ -2,8 +2,11 @@ import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold, useFonts } from '@e
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, usePathname, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LogBox } from 'react-native';
+
+import { loadSavedLanguage } from '@/i18n';
 
 import { AuthProvider, setPendingHref, takePendingHref, useAuth } from '@/lib/auth';
 import { fonts, useTheme } from '@/theme';
@@ -13,7 +16,13 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 // Warning solo-dev interno a expo-router (NavigationContainer → setLastUnhandledLink chiamato
 // dalla promise dell'URL iniziale prima del mount, succede in Expo Go). Non dipende dal codice
 // dell'app; il toast di LogBox in basso copriva la tab bar su Android.
-LogBox.ignoreLogs(["Can't perform a React state update on a component that hasn't mounted yet"]);
+// Lo schema `boxly` resta accanto a `stivo` per le etichette vecchie (CONTRACT v2.1). expo-router chiama
+// Linking.createURL('/') senza schema, quindi expo-linking avvisa che usa 'stivo' e ignora gli altri: è
+// voluto, e il toast copriva tab bar e footer dei form (BUG-101).
+LogBox.ignoreLogs([
+  "Can't perform a React state update on a component that hasn't mounted yet",
+  'Linking found multiple possible URI schemes in your Expo config',
+]);
 
 export const unstable_settings = {
   // un deep link a box/[id] a freddo mantiene le tab sotto, così "indietro" funziona
@@ -26,6 +35,7 @@ function RootNavigator() {
   const pathname = usePathname();
   const router = useRouter();
   const { dark, colors } = useTheme();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (loading) return;
@@ -67,14 +77,15 @@ function RootNavigator() {
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="box/new" options={{ title: 'Nuova scatola' }} />
-        <Stack.Screen name="box/[id]/index" options={{ title: 'Scatola' }} />
-        <Stack.Screen name="box/[id]/edit" options={{ title: 'Modifica scatola' }} />
-        <Stack.Screen name="box/[id]/qr" options={{ title: 'Etichetta QR' }} />
-        <Stack.Screen name="box/[id]/share" options={{ title: 'Condivisione' }} />
-        <Stack.Screen name="box/[id]/history" options={{ title: 'Storico' }} />
-        <Stack.Screen name="item/new" options={{ title: 'Nuovo oggetto' }} />
-        <Stack.Screen name="item/[id]" options={{ title: 'Oggetto' }} />
+        <Stack.Screen name="search" options={{ title: t('nav.search') }} />
+        <Stack.Screen name="box/new" options={{ title: t('nav.newBox') }} />
+        <Stack.Screen name="box/[id]/index" options={{ title: t('nav.box') }} />
+        <Stack.Screen name="box/[id]/edit" options={{ title: t('nav.editBox') }} />
+        <Stack.Screen name="box/[id]/qr" options={{ title: t('nav.qr') }} />
+        <Stack.Screen name="box/[id]/share" options={{ title: t('nav.share') }} />
+        <Stack.Screen name="box/[id]/history" options={{ title: t('nav.history') }} />
+        <Stack.Screen name="item/new" options={{ title: t('nav.newItem') }} />
+        <Stack.Screen name="item/[id]" options={{ title: t('nav.item') }} />
       </Stack>
     </ThemeProvider>
   );
@@ -82,7 +93,12 @@ function RootNavigator() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ Inter_400Regular, Inter_600SemiBold, Inter_700Bold });
-  if (!fontsLoaded && !fontError) return null;
+  // lingua salvata (stivo.lang) applicata prima del primo render, per non mostrare l'altra lingua
+  const [langReady, setLangReady] = useState(false);
+  useEffect(() => {
+    loadSavedLanguage().finally(() => setLangReady(true));
+  }, []);
+  if ((!fontsLoaded && !fontError) || !langReady) return null;
   return (
     <AuthProvider>
       <RootNavigator />

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Esegue la suite Maestro. Uso: e2e/scripts/run-e2e.sh ios|android
-#  ios     → suite completa e2e/*.yaml su build nativa com.boxly.app (simulatore "iPhone 17 Pro")
+#  ios     → suite completa e2e/*.yaml su build nativa com.stivo.app (simulatore "iPhone 17 Pro")
 #  android → smoke e2e/android/*.yaml in Expo Go (host.exp.exponent), dev server su :8082
 # Prerequisiti: supabase start && supabase db reset; Metro attivo (8081 iOS / 8082 Expo Go Android).
 set -euo pipefail

@@ -64,7 +64,7 @@ describe('condivisione', () => {
   });
 
   it.each([
-    ['user_not_found', /Nessun utente Boxly/],
+    ['user_not_found', /Nessun utente Stivo/],
     ['cannot_share_with_self', /già tua/],
     ['not_owner', /proprietario/],
   ])('errore RPC %s → messaggio in italiano', async (code, re) => {

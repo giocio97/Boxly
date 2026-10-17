@@ -1,4 +1,4 @@
-appId: com.boxly.app
+appId: com.stivo.app
 name: Alice condivide Inverno con carol in sola lettura; carol vede ma non modifica
 tags: [sharing, roles]
 ---
@@ -68,7 +68,8 @@ tags: [sharing, roles]
     timeout: 10000
 - assertVisible:
     id: "role-badge"
-- assertVisible: ".*Maglione blu.*"
+- assertVisible:
+    id: "item-row-22222222-2222-2222-2222-000000000001"
 - assertNotVisible:
     id: "add-item-button"
 - assertNotVisible:

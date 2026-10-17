@@ -65,7 +65,7 @@ describe('BoxForm', () => {
     await user.press(screen.getByTestId('box-season-winter'));
     await user.press(screen.getByTestId('box-save'));
     await waitFor(() =>
-      expect(onSubmit).toHaveBeenCalledWith({ name: 'Trasloco', location: null, season: 'winter', notes: null }),
+      expect(onSubmit).toHaveBeenCalledWith({ name: 'Trasloco', location: null, season: 'winter', notes: null, default_item_type: null }),
     );
   });
 
@@ -82,5 +82,33 @@ describe('BoxForm', () => {
     render(<BoxForm submitLabel="Salva" initial={{ name: 'Estate', location: 'Armadio', season: 'summer' }} onSubmit={jest.fn()} />);
     expect(screen.getByTestId('box-name-input').props.value).toBe('Estate');
     expect(screen.getByTestId('box-season-summer').props.accessibilityState.selected).toBe(true);
+  });
+
+  it('v2: chip tipo predefinito (box-type-none + 8 tipi), nessuno selezionato di default', () => {
+    render(<BoxForm submitLabel="Crea" onSubmit={jest.fn()} />);
+    expect(screen.getByTestId('box-type-none')).toBeTruthy();
+    for (const t of ['clothing', 'shoes_accessories', 'books', 'electronics', 'home_kitchen', 'toys_games', 'documents', 'other']) {
+      expect(screen.getByTestId(`box-type-${t}`)).toBeTruthy();
+    }
+  });
+
+  it('v2: scelta del tipo predefinito → default_item_type nel payload, poi "nessuno" → null', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(null);
+    render(<BoxForm submitLabel="Crea" onSubmit={onSubmit} />);
+    const user = userEvent.setup();
+    await user.type(screen.getByTestId('box-name-input'), 'Libreria');
+    await user.press(screen.getByTestId('box-type-books'));
+    await user.press(screen.getByTestId('box-save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenLastCalledWith(expect.objectContaining({ name: 'Libreria', default_item_type: 'books' })));
+    await user.press(screen.getByTestId('box-type-none'));
+    await user.press(screen.getByTestId('box-save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenLastCalledWith(expect.objectContaining({ default_item_type: null })));
+  });
+
+  it('v2: modifica precompila il tipo predefinito', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(null);
+    render(<BoxForm submitLabel="Salva" initial={{ name: 'Inverno', default_item_type: 'clothing' }} onSubmit={onSubmit} />);
+    await userEvent.setup().press(screen.getByTestId('box-save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ default_item_type: 'clothing' })));
   });
 });

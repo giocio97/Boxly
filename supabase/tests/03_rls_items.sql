@@ -70,7 +70,7 @@ select * from no_plan();
 select qa.as_user(qa.alice());
 select set_eq($$select name from items$$, array['Maglione blu','Piumino nero','Sciarpa grigia','Costume rosso','Camicia lino bianca'], 'alice vede 5 oggetti');
 select qa.as_user(qa.bob());
-select is((select count(*)::int from items), 6, 'bob vede 6 oggetti');
+select is((select count(*)::int from items), 7, 'bob vede 7 oggetti (v2: + Kindle)');
 select qa.as_user(qa.carol());
 select is_empty($$select id from items$$, 'carol non vede oggetti');
 select qa.as_anon();

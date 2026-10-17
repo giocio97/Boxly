@@ -1,6 +1,6 @@
-# Boxly: riepilogo e checklist
+# Stivo (ex Boxly): riepilogo e checklist
 
-Aggiornato al 2026-10-15 · Repository: https://github.com/giocio97/Boxly
+Aggiornato al 2026-10-17 · Repository: https://github.com/giocio97/Boxly
 
 ## Cos'è Boxly
 App mobile per catalogare cosa metti nelle scatole (cambio stagione, trasloco, cantina).
@@ -76,21 +76,25 @@ Payoff: *Sai sempre cosa c'è dentro.*
 - [ ] Rinnovare il token GitHub "boxly" prima della scadenza del **14/11/2026**
 - [ ] Verificare l'email Bitbucket sul cambio SSH (sospetta frode: non cliccare i link, eventualmente chiedere all'IT)
 
-### v2: da fare (piano in [NEXT_SESSION.md](NEXT_SESSION.md))
-- [ ] Tipi di oggetto (Vestiti, Scarpe e accessori, Libri, Elettronica, Casa e cucina, Giochi, Documenti, Altro) su oggetto e scatola
-- [ ] Campi specifici per tipo (es. autore per i libri, modello e seriale per l'elettronica)
-- [ ] Traduzione con i18n a chiavi: italiano + inglese
-- [ ] Sezione Lingua nel profilo
-- [ ] Login con Google
-- [ ] Tab bar Scansiona · (Scatole) · Profilo, con Scatole al centro in rilievo
-- [ ] Barra di ricerca larga in cima alla schermata Scatole
-- [ ] Pulsante "Nuova scatola" flottante sopra la lista
-- [ ] Test aggiornati + sezione v2 nel report
+### v2: fatto il 2026-10-17 (test: pgTAP 358/358, Jest 252/252, Maestro iOS 11/11, Android Expo Go 2/2)
+- [x] Tipi di oggetto (Vestiti, Scarpe e accessori, Libri, Elettronica, Casa e cucina, Giochi, Documenti, Altro) su oggetto e scatola
+- [x] Campi specifici per tipo (es. autore per i libri, modello e seriale per l'elettronica)
+- [x] Traduzione con i18n a chiavi: italiano + inglese
+- [x] Sezione Lingua nel profilo
+- [ ] Login con Google: **rimandato** (servono le credenziali Google Cloud, NEXT_SESSION.md §6)
+- [x] Tab bar Scansiona · (Scatole) · Profilo, con Scatole al centro in rilievo
+- [x] Barra di ricerca larga in cima alla schermata Scatole
+- [x] Pulsante "Nuova scatola" flottante sopra la lista
+- [x] Test aggiornati + sezione v2 nel report
 
 ### Dopo la v2
-- [ ] Scegliere il nome definitivo, perché "Boxly" è già usato, e verificarlo: marchi, domini, store ([rosa e checklist](NEXT_SESSION.md))
-- [ ] Rinominare l'app (checklist in NEXT_SESSION.md §7A)
+- [x] Scegliere il nome definitivo: **Stivo** (verifica preliminare: nessuna app omonima; `stivo.it` e `stivo.app` già registrati)
+- [ ] Verifica ufficiale del marchio "Stivo" su EUIPO e UIBM e scelta del dominio (es. `getstivo.app`, `stivoapp.com`)
+- [x] Rinominare l'app in Stivo (codice, QR `stivo://` con compatibilità `boxly://`, bundle id `com.stivo.app`, Supabase `stivo`)
+- [ ] Rinominare il repository GitHub da `Boxly` a `Stivo` (lo fai tu), poi aggiornare il remote
 - [ ] Scegliere l'hosting del backend (Supabase Cloud UE consigliato, NEXT_SESSION.md §7B) e pubblicare le migrazioni
+- [ ] Placeholder del form oggetto adattati al tipo (oggi esempi di vestiti per tutti i tipi)
+- [ ] Permessi nativi iOS tradotti (`locales` in app.json, serve build nativa)
 - [ ] Ricerca AI "dov'è il maglione blu?"
 - [ ] Guida al rilascio sugli store (EAS, account Apple e Google Play)
 - [ ] Build Android nativa via EAS

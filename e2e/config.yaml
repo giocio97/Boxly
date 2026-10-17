@@ -1,4 +1,4 @@
-# Boxly E2E — eseguire con: maestro test e2e/  (app già installata, Supabase locale con db reset)
+# Stivo E2E — eseguire con: maestro test e2e/  (app già installata, Supabase locale con db reset)
 flows:
   - "*.yaml"
 executionOrder:
@@ -13,3 +13,5 @@ executionOrder:
     - 07_search
     - 08_deeplink
     - 09_logout
+    - 10_book_author
+    - 11_language

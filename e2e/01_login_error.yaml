@@ -1,4 +1,4 @@
-appId: com.boxly.app
+appId: com.stivo.app
 name: Login con password errata mostra errore
 tags: [auth]
 ---

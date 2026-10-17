@@ -1,6 +1,12 @@
-# Boxly: ripartenza prossima sessione
+# Stivo (ex Boxly): ripartenza prossima sessione
 
-> Leggi questo file per primo. Riassume lo stato al **2026-10-15** e il piano approvato per la **v2**.
+> Leggi questo file per primo.
+>
+> **Aggiornamento 2026-10-17: la v2 è FATTA.** App rinominata **Stivo**, tipi di oggetto, i18n it/en, nuova
+> navigazione. Test: pgTAP 358/358, Jest 252/252, Maestro iOS 11/11, Android in Expo Go 2/2 (vedi
+> [TEST_REPORT.md](TEST_REPORT.md)). Login Google **rimandato**. Le sezioni §4–§5 qui sotto sono il piano v2 (storico).
+> Ora valgono: bundle id `com.stivo.app`, Supabase `project_id = stivo` (container `supabase_*_stivo`), QR `stivo://`.
+> Prossimi passi: [RIEPILOGO.md](RIEPILOGO.md), checklist "Dopo la v2".
 > Contesto collegato: [CLAUDE.md](../CLAUDE.md) · [CONTRACT.md](CONTRACT.md) · [TEST_REPORT.md](TEST_REPORT.md) · [BRAND.md](../BRAND.md)
 
 ## Prompt per ripartire

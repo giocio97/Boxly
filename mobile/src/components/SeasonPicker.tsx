@@ -1,7 +1,10 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import type { Season } from '@shared/types';
+import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { SEASONS, seasonLabel } from '@/lib/labels';
+import { SEASONS } from '@/lib/labels';
 import { radius, space, seasonColors, useTheme } from '@/theme';
 import { AppText } from './AppText';
 
@@ -15,20 +18,22 @@ export interface SeasonPickerProps {
 /** Selettore stagione a chip; toccare di nuovo la stagione scelta la deseleziona. */
 export function SeasonPicker({ value, onChange, testIDPrefix }: SeasonPickerProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   return (
     <View style={styles.wrap}>
       <AppText variant="label" muted>
-        Stagione
+        {t('seasons.label')}
       </AppText>
       <View style={styles.row}>
         {SEASONS.map((s) => {
           const selected = value === s;
+          const label = t(`seasons.${s}`);
           return (
             <Pressable
               key={s}
               testID={`${testIDPrefix}-${s}`}
               accessibilityRole="radio"
-              accessibilityLabel={seasonLabel[s]}
+              accessibilityLabel={label}
               accessibilityState={{ selected, checked: selected }}
               onPress={() => onChange(selected ? null : s)}
               style={[
@@ -39,7 +44,7 @@ export function SeasonPicker({ value, onChange, testIDPrefix }: SeasonPickerProp
                 },
               ]}>
               <AppText variant="secondary" color={selected ? '#FFFFFF' : colors.text}>
-                {seasonLabel[s]}
+                {label}
               </AppText>
             </Pressable>
           );
@@ -54,13 +59,16 @@ export function ChoiceChip({
   selected,
   onPress,
   testID,
+  icon,
 }: {
   label: string;
   selected: boolean;
   onPress: () => void;
   testID?: string;
+  icon?: ComponentProps<typeof Ionicons>['name'];
 }) {
   const { colors } = useTheme();
+  const fg = selected ? '#FFFFFF' : colors.text;
   return (
     <Pressable
       testID={testID}
@@ -70,12 +78,14 @@ export function ChoiceChip({
       onPress={onPress}
       style={[
         styles.chip,
+        icon && styles.chipWithIcon,
         {
           borderColor: selected ? colors.accent : colors.border,
           backgroundColor: selected ? colors.accent : colors.surface,
         },
       ]}>
-      <AppText variant="secondary" color={selected ? '#FFFFFF' : colors.text}>
+      {icon ? <Ionicons name={icon} size={16} color={fg} /> : null}
+      <AppText variant="secondary" color={fg}>
         {label}
       </AppText>
     </Pressable>
@@ -93,4 +103,5 @@ const styles = StyleSheet.create({
     minHeight: 36,
     justifyContent: 'center',
   },
+  chipWithIcon: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 2 },
 });

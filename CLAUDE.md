@@ -1,7 +1,7 @@
-# Boxly
+# Stivo (ex Boxly)
 
 App mobile (Expo + Supabase locale) per catalogare oggetti nelle scatole e ritrovarli con un QR.
-Brand: [BRAND.md](BRAND.md) · Contratto tecnico: [docs/CONTRACT.md](docs/CONTRACT.md) · Tipi: [shared/types.ts](shared/types.ts)
+Brand: [BRAND.md](BRAND.md) · Contratto tecnico: [docs/CONTRACT.md](docs/CONTRACT.md) (**leggi la sezione v2**) · Tipi: [shared/types.ts](shared/types.ts)
 
 ## Ownership dei file (agent team)
 | Area | Owner |
@@ -20,6 +20,6 @@ Non modificare file di altri: manda un messaggio all'owner. Cambi al contratto �
 - Simulatori: iOS "iPhone 17 Pro", Android AVD "Pixel_9_Pro_API_VanillaIceCream"
 
 ## Convenzioni
-- Testi UI in italiano, tono da BRAND.md. TypeScript strict.
+- Testi UI **solo** in `mobile/src/i18n/locales/{it,en}.json` (it principale, en fallback), tono da BRAND.md. Il nome dell'app solo via `APP_NAME` / `{{app}}`. TypeScript strict.
 - Import da `shared/` solo `import type`.
 - Nessun segreto nel repo oltre alle chiavi locali di Supabase (demo).

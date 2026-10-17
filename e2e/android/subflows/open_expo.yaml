@@ -1,4 +1,4 @@
-# Apre Boxly dentro Expo Go e chiude il menu sviluppatore. Se è già loggato, fa logout.
+# Apre Stivo dentro Expo Go e chiude il menu sviluppatore. Se è già loggato, fa logout.
 appId: host.exp.exponent
 ---
 - launchApp:
@@ -8,7 +8,7 @@ appId: host.exp.exponent
 - openLink: ${EXPO_URL || 'exp://10.0.2.2:8082'}
 - extendedWaitUntil:
     visible:
-      text: "(Continue|Reload|.*Boxly.*|Accedi|Le mie scatole)"
+      text: "(Continue|Reload|.*Stivo.*|Accedi|Log in|Scatole|Boxes)"
     timeout: 60000
 - tapOn:
     text: "Continue"

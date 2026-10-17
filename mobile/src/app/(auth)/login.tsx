@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, type TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -15,6 +16,7 @@ import { space, useTheme } from '@/theme';
 export default function LoginScreen() {
   const { signIn } = useAuth();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -23,14 +25,14 @@ export default function LoginScreen() {
 
   async function submit() {
     if (!email.trim() || !password) {
-      setError('Inserisci email e password.');
+      setError(t('auth.missingFields'));
       return;
     }
     setBusy(true);
     setError(null);
     const { error: err } = await signIn(email, password);
     setBusy(false);
-    if (err) setError(errorMessage(err, 'Accesso non riuscito. Riprova.'));
+    if (err) setError(errorMessage(err, t('auth.login.failed')));
   }
 
   return (
@@ -40,8 +42,8 @@ export default function LoginScreen() {
         <Input
           testID="login-email"
           nextRef={passwordRef}
-          label="Email"
-          placeholder="nome@esempio.it"
+          label={t('auth.email')}
+          placeholder={t('auth.emailPlaceholder')}
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="email-address"
@@ -53,8 +55,8 @@ export default function LoginScreen() {
         <Input
           ref={passwordRef}
           testID="login-password"
-          label="Password"
-          placeholder="La tua password"
+          label={t('auth.password')}
+          placeholder={t('auth.login.passwordPlaceholder')}
           secureTextEntry
           textContentType="password"
           autoComplete="password"
@@ -64,10 +66,10 @@ export default function LoginScreen() {
           returnKeyType="go"
         />
         <ErrorText testID="auth-error">{error}</ErrorText>
-        <Button testID="login-submit" title="Accedi" onPress={submit} loading={busy} />
-        <Button testID="goto-signup" title="Non hai un account? Registrati" kind="ghost" onPress={() => router.replace('/signup')} style={{ marginTop: space.sm }} />
+        <Button testID="login-submit" title={t('auth.login.submit')} onPress={submit} loading={busy} />
+        <Button testID="goto-signup" title={t('auth.login.toSignup')} kind="ghost" onPress={() => router.replace('/signup')} style={{ marginTop: space.sm }} />
         <AppText variant="secondary" muted style={styles.center}>
-          I tuoi oggetti, sempre a portata di QR.
+          {t('auth.login.footer')}
         </AppText>
       </Screen>
     </SafeAreaView>

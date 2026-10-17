@@ -1,0 +1,274 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save changes",
+    "delete": "Delete",
+    "edit": "Edit",
+    "open": "Open",
+    "tagline": "Always know what’s inside.",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items",
+    "boxUnavailable": "Box not available"
+  },
+  "nav": {
+    "boxes": "My boxes",
+    "newBox": "New box",
+    "box": "Box",
+    "editBox": "Edit box",
+    "qr": "QR label",
+    "share": "Sharing",
+    "history": "History",
+    "newItem": "New item",
+    "item": "Item",
+    "editItem": "Edit item",
+    "search": "Search",
+    "scan": "Scan QR",
+    "profile": "Profile"
+  },
+  "tabs": {
+    "boxes": "Boxes",
+    "scan": "Scan",
+    "profile": "Profile"
+  },
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Password",
+    "missingFields": "Enter your email and password.",
+    "login": {
+      "passwordPlaceholder": "Your password",
+      "submit": "Log in",
+      "toSignup": "No account yet? Sign up",
+      "failed": "Couldn’t log you in. Try again.",
+      "footer": "Your things, one QR away."
+    },
+    "signup": {
+      "subtitle": "Create your account and start filling your boxes.",
+      "name": "Name",
+      "namePlaceholder": "What’s your name?",
+      "passwordPlaceholder": "At least 6 characters",
+      "passwordTooShort": "Your password needs at least 6 characters.",
+      "submit": "Create account",
+      "toLogin": "Already have an account? Log in",
+      "failed": "Couldn’t create your account. Try again."
+    }
+  },
+  "boxes": {
+    "list": {
+      "loadError": "Couldn’t load your boxes. Try again.",
+      "searchPlaceholder": "Find something in your boxes…",
+      "newBox": "New box"
+    },
+    "empty": {
+      "title": "No boxes yet.",
+      "message": "Create one and start filling it."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "e.g. Winter 2025",
+      "location": "Where is it?",
+      "locationPlaceholder": "e.g. Basement, bedroom closet",
+      "notes": "Notes",
+      "notesPlaceholder": "Anything to remember?",
+      "defaultType": "What usually goes in",
+      "defaultTypeNone": "A bit of everything",
+      "nameRequired": "Give the box a name.",
+      "nameTooLong": "The name can be up to 80 characters.",
+      "create": "Create box",
+      "createError": "Couldn’t create the box. Try again.",
+      "saveError": "Couldn’t save. Try again.",
+      "cannotEdit": "You can’t edit this box."
+    },
+    "detail": {
+      "loadError": "Couldn’t load the box. Try again.",
+      "notFound": "This box doesn’t exist or hasn’t been shared with you.",
+      "backToBoxes": "Back to boxes",
+      "sharedBy": "Shared by {{email}}",
+      "qr": "QR",
+      "share": "Share",
+      "history": "History",
+      "addItem": "Add",
+      "emptyTitle": "This box is empty.",
+      "emptyEditable": "Add the first item with a photo.",
+      "emptyReadonly": "Nothing in here yet.",
+      "deleteTitle": "Delete this box?",
+      "deleteMessage": "\"{{name}}\" and everything in it will be deleted. This can’t be undone.",
+      "deleteError": "Couldn’t delete the box. Try again."
+    },
+    "qr": {
+      "a11y": "QR code for box {{name}}",
+      "hint": "Print the label (6×6 cm) and stick it on the box: scan it with {{app}} to see what’s inside.",
+      "print": "Print label",
+      "share": "Share label",
+      "printError": "Couldn’t open printing. Try again or share the label.",
+      "shareUnavailable": "Sharing isn’t available on this device.",
+      "shareError": "Couldn’t prepare the label. Try again.",
+      "shareTitle": "Label {{name}}",
+      "fileName": "label",
+      "fileFallback": "box"
+    },
+    "share": {
+      "title": "Share with someone",
+      "email": "Email",
+      "emailPlaceholder": "their email",
+      "whatCanDo": "What they can do",
+      "submit": "Share",
+      "emailRequired": "Enter the email of the person you want to share with.",
+      "error": "Couldn’t share the box. Try again.",
+      "success": "Done! {{email}} can now see the box.",
+      "ownerOnly": "Only the owner can add or remove people.",
+      "whoSees": "Who can see it",
+      "onlyYou": "Only you can see it for now.",
+      "leave": "Leave",
+      "revoke": "Remove",
+      "leaveTitle": "Leave this box?",
+      "revokeTitle": "Remove access?",
+      "leaveMessage": "You won’t see this box until it’s shared with you again.",
+      "revokeMessage": "{{email}} won’t see this box anymore.",
+      "revokeError": "Couldn’t remove access. Try again."
+    },
+    "history": {
+      "loadError": "Couldn’t load the history. Try again.",
+      "emptyTitle": "Nothing has happened yet.",
+      "emptyMessage": "Here you’ll see what goes in, comes out and changes in this box.",
+      "arrivedFrom": "moved here from {{box}}",
+      "arrivedFromOther": "moved here from another box",
+      "movedTo": "moved to {{box}}",
+      "movedToOther": "moved to another box",
+      "byYou": "by you",
+      "byPerson": "by {{name}}"
+    }
+  },
+  "items": {
+    "form": {
+      "photoHint": "Add a photo: it helps you spot it at a glance.",
+      "takePhoto": "Take photo",
+      "fromLibrary": "From library",
+      "type": "Type",
+      "name": "Name",
+      "namePlaceholder": "e.g. Blue sweater",
+      "category": "Category",
+      "categoryPlaceholder": "e.g. Knitwear",
+      "brand": "Brand",
+      "brandPlaceholder": "e.g. Uniqlo",
+      "color": "Color",
+      "colorPlaceholder": "e.g. Blue",
+      "size": "Size",
+      "sizePlaceholder": "e.g. M",
+      "author": "Author",
+      "authorPlaceholder": "e.g. Umberto Eco",
+      "model": "Model",
+      "modelPlaceholder": "e.g. Paperwhite 11",
+      "serial": "Serial number",
+      "serialPlaceholder": "e.g. G000ABC123",
+      "notes": "Notes",
+      "notesPlaceholder": "Anything to remember?",
+      "nameRequired": "Give the item a name.",
+      "submitNew": "Save item",
+      "saveError": "Couldn’t save the item. Try again.",
+      "photoErrorNew": "Item saved, but the photo didn’t upload. Try again or go back: the item stays without a photo.",
+      "photoErrorEdit": "Changes saved, but the photo didn’t upload. Try again or cancel.",
+      "cannotAdd": "You can’t add items to this box.",
+      "titleIn": "In {{box}}"
+    },
+    "detail": {
+      "notFound": "Item not found",
+      "notFoundMessage": "Maybe it was taken out of the box.",
+      "boxA11y": "Box {{name}}",
+      "foundIn": "It’s in",
+      "type": "Type",
+      "updated": "Updated",
+      "move": "Move to another box",
+      "moveWhere": "Where should it go?",
+      "noTargets": "You don’t have other boxes to move it to.",
+      "moveError": "Couldn’t move it. Try again.",
+      "deleteTitle": "Delete this item?",
+      "deleteMessage": "\"{{name}}\" will be removed from the box.",
+      "deleteError": "Couldn’t delete it. Try again."
+    },
+    "inBox": "In {{box}}"
+  },
+  "search": {
+    "placeholder": "Search for an item: sweater, blue, Uniqlo…",
+    "all": "All",
+    "error": "Search isn’t working right now. Try again.",
+    "startTitle": "What are you looking for?",
+    "startMessage": "Type a name, brand, color or author, or pick a type: I’ll tell you which box it’s in.",
+    "emptyTitle": "Nothing found.",
+    "emptyMessage": "Try another word."
+  },
+  "scan": {
+    "notOurs": "This QR code isn’t from {{app}}",
+    "manualPlaceholder": "…or paste the code (stivo://box/…)",
+    "permissionTitle": "Camera needed",
+    "permissionMessage": "To read the QR code on a box, allow {{app}} to use the camera.",
+    "allowCamera": "Allow camera",
+    "hint": "Point the camera at the QR code on the box label."
+  },
+  "profile": {
+    "language": "Language",
+    "logout": "Log out",
+    "footer": "{{app}} · Always know what’s inside."
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English"
+  },
+  "photos": {
+    "prepareError": "Couldn’t prepare the photo. Try again.",
+    "libraryPermission": "To pick a photo, allow {{app}} to access your library in Settings.",
+    "libraryError": "Couldn’t open your library. Try again.",
+    "cameraPermission": "To take a photo, allow {{app}} to use the camera in Settings.",
+    "cameraUnavailable": "The camera isn’t available on this device. Pick a photo from your library."
+  },
+  "itemTypes": {
+    "clothing": "Clothes",
+    "shoes_accessories": "Shoes & accessories",
+    "books": "Books",
+    "electronics": "Electronics",
+    "home_kitchen": "Home & kitchen",
+    "toys_games": "Toys & games",
+    "documents": "Documents",
+    "other": "Other"
+  },
+  "seasons": {
+    "label": "Season",
+    "spring": "Spring",
+    "summer": "Summer",
+    "autumn": "Autumn",
+    "winter": "Winter",
+    "all": "All year"
+  },
+  "roles": {
+    "owner": "Owner",
+    "editor": "Can edit",
+    "viewer": "View only"
+  },
+  "events": {
+    "added": "added",
+    "updated": "edited",
+    "moved": "moved",
+    "removed": "removed"
+  },
+  "errors": {
+    "generic": "Something went wrong. Try again.",
+    "invalidCredentials": "Wrong email or password.",
+    "alreadyRegistered": "There’s already an account with this email. Try logging in.",
+    "weakPassword": "Your password needs at least 6 characters.",
+    "invalidEmail": "Check the email address.",
+    "network": "Can’t connect. Check your connection and try again.",
+    "permission": "You don’t have permission to do that.",
+    "rpc": {
+      "not_owner": "Only the box owner can do that.",
+      "forbidden": "You don’t have permission to change one of the two boxes.",
+      "user_not_found": "No {{app}} user with this email. Check it and try again.",
+      "cannot_share_with_self": "This box is already yours: no need to share it with yourself.",
+      "invalid_role": "Choose whether they can only view or also edit.",
+      "invalid_type": "That item type doesn’t exist. Pick one from the list."
+    }
+  },
+  "label": {
+    "a11y": "Label"
+  }
+}

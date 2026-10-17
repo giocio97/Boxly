@@ -1,4 +1,4 @@
-// Boxly — contratto dati condiviso (owner: lead). Vedi docs/CONTRACT.md.
+// Stivo (ex Boxly) — contratto dati condiviso (owner: lead). Vedi docs/CONTRACT.md (sezione v2).
 // Importare SOLO con `import type` (Metro non risolve file fuori da mobile/,
 // ma gli import di soli tipi vengono rimossi dalla compilazione).
 
@@ -9,6 +9,24 @@ export type Season = 'spring' | 'summer' | 'autumn' | 'winter' | 'all';
 export type ShareRole = 'viewer' | 'editor';
 export type BoxRole = 'owner' | ShareRole;
 export type ItemEventAction = 'added' | 'updated' | 'moved' | 'removed';
+
+/** Tipi di oggetto (CONTRACT v2.2). */
+export type ItemType =
+  | 'clothing'
+  | 'shoes_accessories'
+  | 'books'
+  | 'electronics'
+  | 'home_kitchen'
+  | 'toys_games'
+  | 'documents'
+  | 'other';
+
+/** Campi specifici per tipo, salvati in `items.attributes`. */
+export interface ItemAttributes {
+  author?: string;
+  model?: string;
+  serial?: string;
+}
 
 export interface Profile {
   id: UUID;
@@ -24,6 +42,7 @@ export interface Box {
   location: string | null;
   season: Season | null;
   notes: string | null;
+  default_item_type: ItemType | null;
   created_at: ISODate;
   updated_at: ISODate;
 }
@@ -39,6 +58,8 @@ export interface Item {
   id: UUID;
   box_id: UUID;
   name: string;
+  item_type: ItemType;
+  attributes: ItemAttributes;
   brand: string | null;
   color: string | null;
   category: string | null;
@@ -82,9 +103,9 @@ export interface ItemSearchResult extends Item {
   box_location: string | null;
 }
 
-export type InsertBox = Pick<Box, 'name'> & Partial<Pick<Box, 'location' | 'season' | 'notes'>>;
+export type InsertBox = Pick<Box, 'name'> & Partial<Pick<Box, 'location' | 'season' | 'notes' | 'default_item_type'>>;
 export type InsertItem = Pick<Item, 'box_id' | 'name'> &
-  Partial<Pick<Item, 'brand' | 'color' | 'category' | 'size' | 'season' | 'notes' | 'photo_path'>>;
+  Partial<Pick<Item, 'item_type' | 'attributes' | 'brand' | 'color' | 'category' | 'size' | 'season' | 'notes' | 'photo_path'>>;
 
 /** Codici errore sollevati dalle RPC (testo di `error.message`). */
 export type RpcErrorCode =
@@ -92,7 +113,9 @@ export type RpcErrorCode =
   | 'forbidden'
   | 'user_not_found'
   | 'cannot_share_with_self'
-  | 'invalid_role';
+  | 'invalid_role'
+  | 'invalid_type';
 
-/** Valore codificato nel QR di una scatola: `boxly://box/<box_id>` (vedi CONTRACT §4). */
-export type BoxQrValue = `boxly://box/${UUID}`;
+/** Valore codificato nel QR di una scatola: `stivo://box/<box_id>` (CONTRACT v2.1). Lo scanner accetta anche il legacy `boxly://box/<id>`. */
+export type BoxQrValue = `stivo://box/${UUID}`;
+export type LegacyBoxQrValue = `boxly://box/${UUID}`;

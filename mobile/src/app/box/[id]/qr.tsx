@@ -4,6 +4,7 @@ import * as Print from 'expo-print';
 import { useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
@@ -13,6 +14,7 @@ import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorText, Loading, Screen } from '@/components/Screen';
 import { getBox } from '@/lib/api';
+import { APP_NAME } from '@/lib/brand';
 import { LABEL_PT, labelHtml } from '@/lib/label';
 import { boxQrValue } from '@/lib/qr';
 import { radius, space, useTheme } from '@/theme';
@@ -20,6 +22,7 @@ import { radius, space, useTheme } from '@/theme';
 export default function BoxQrScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [box, setBox] = useState<BoxOverview | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<'print' | 'share' | null>(null);
@@ -36,7 +39,7 @@ export default function BoxQrScreen() {
       await Print.printAsync({ html: labelHtml(box, false) });
     } catch (e) {
       const msg = (e as Error)?.message ?? '';
-      if (!/cancel|did not complete/i.test(msg)) setError('Non riesco ad aprire la stampa. Riprova o condividi l’etichetta.');
+      if (!/cancel|did not complete/i.test(msg)) setError(t('boxes.qr.printError'));
     } finally {
       setBusy(null);
     }
@@ -48,7 +51,7 @@ export default function BoxQrScreen() {
     setError(null);
     try {
       if (!(await Sharing.isAvailableAsync())) {
-        setError('La condivisione non è disponibile su questo dispositivo.');
+        setError(t('boxes.qr.shareUnavailable'));
         return;
       }
       // In Expo Go su Android il file creato da expo-print non è leggibile da expo-sharing né da
@@ -62,30 +65,30 @@ export default function BoxQrScreen() {
         base64: true,
       });
       if (!base64) throw new Error('PDF vuoto');
-      const pdf = new File(Paths.cache, `etichetta-${labelFileName(box.name)}.pdf`);
+      const pdf = new File(Paths.cache, `${t('boxes.qr.fileName')}-${labelFileName(box.name, t('boxes.qr.fileFallback'))}.pdf`);
       if (pdf.exists) pdf.delete();
       pdf.create();
       pdf.write(base64, { encoding: 'base64' });
       await Sharing.shareAsync(pdf.uri, {
         mimeType: 'application/pdf',
         UTI: 'com.adobe.pdf',
-        dialogTitle: `Etichetta ${box.name}`,
+        dialogTitle: t('boxes.qr.shareTitle', { name: box.name }),
       });
     } catch (e) {
       console.warn('[label] condivisione etichetta fallita', e);
-      setError('Non riesco a preparare l’etichetta. Riprova.');
+      setError(t('boxes.qr.shareError'));
     } finally {
       setBusy(null);
     }
   }
 
   if (box === undefined) return <Loading />;
-  if (!box) return <EmptyState title="Scatola non disponibile" icon="lock-closed-outline" />;
+  if (!box) return <EmptyState title={t('common.boxUnavailable')} icon="lock-closed-outline" />;
 
   return (
     <Screen scroll style={styles.center}>
       <View style={[styles.label, { borderColor: colors.primary }]}>
-        <View testID="qr-code" accessible accessibilityLabel={`QR della scatola ${box.name}`} style={styles.qrWrap}>
+        <View testID="qr-code" accessible accessibilityLabel={t('boxes.qr.a11y', { name: box.name })} style={styles.qrWrap}>
           <QRCode value={boxQrValue(box.id)} size={200} color="#000000" backgroundColor="#FFFFFF" quietZone={8} />
         </View>
         <AppText variant="section" color="#1E1B16" style={styles.text} numberOfLines={2}>
@@ -98,17 +101,17 @@ export default function BoxQrScreen() {
         ) : null}
         <SeasonBadge season={box.season} style={styles.centerSelf} />
         <AppText variant="label" color="#B8742F">
-          Boxly
+          {APP_NAME}
         </AppText>
       </View>
       <AppText muted style={styles.text}>
-        Stampa l&apos;etichetta (6×6 cm) e attaccala sulla scatola: inquadrala con Boxly per vedere cosa c&apos;è dentro.
+        {t('boxes.qr.hint')}
       </AppText>
       <ErrorText testID="qr-error">{error}</ErrorText>
       <View style={styles.actions}>
         <Button
           testID="print-label-button"
-          title="Stampa l'etichetta"
+          title={t('boxes.qr.print')}
           icon="print-outline"
           loading={busy === 'print'}
           disabled={!!busy}
@@ -116,7 +119,7 @@ export default function BoxQrScreen() {
         />
         <Button
           testID="share-qr-button"
-          title="Condividi l'etichetta"
+          title={t('boxes.qr.share')}
           icon="share-outline"
           kind="secondary"
           loading={busy === 'share'}
@@ -129,7 +132,7 @@ export default function BoxQrScreen() {
 }
 
 /** Nome file sicuro: minuscole, senza accenti, solo lettere/numeri e trattini. */
-function labelFileName(name: string): string {
+function labelFileName(name: string, fallback: string): string {
   const slug = name
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
@@ -137,7 +140,7 @@ function labelFileName(name: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 40);
-  return slug || 'scatola';
+  return slug || fallback;
 }
 
 const styles = StyleSheet.create({

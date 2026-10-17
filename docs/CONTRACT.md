@@ -118,3 +118,92 @@ Utenti non loggati → redirect a login. Il deep link a una scatola dopo il logi
 - Dialoghi di conferma: `confirm-yes`, `confirm-no`
 
 Per i ruoli `viewer` i pulsanti di modifica **non sono renderizzati** (non basta disabilitarli).
+
+---
+
+# v2 (2026-10-17): rinomina in **Stivo**, tipi di oggetto, i18n, nuova navigazione
+
+Questa sezione **prevale** sulle precedenti dove le contraddice. Il login Google è fuori dalla v2 (rimandato).
+
+## v2.1 Rinomina Boxly → Stivo
+| Cosa | Prima | Dopo |
+|---|---|---|
+| Nome app (`app.json` name / slug) | Boxly / boxly | **Stivo** / **stivo** |
+| Schema deep link | `boxly` | **`["stivo", "boxly"]`**: `stivo` principale, `boxly` resta solo per compatibilità |
+| Valore del QR | `boxly://box/<id>` | **`stivo://box/<id>`**. Lo scanner accetta **anche** `boxly://box/<id>`, le etichette vecchie |
+| Bundle id iOS / package Android | `com.boxly.app` | **`com.stivo.app`** (Maestro `appId` idem) |
+| Supabase `project_id` | `boxly` | **`stivo`** (i container diventano `supabase_*_stivo`) |
+| Redirect URL Supabase | `boxly://`, `boxly://**` | aggiungere `stivo://`, `stivo://**`, `exp://**`; tenere le boxly |
+| Chiavi AsyncStorage | `boxly.*` | `stivo.*` |
+| Etichetta stampabile, testi, wordmark | "Boxly" | "Stivo" |
+| Utenti demo | `*@boxly.test` | **invariati** (solo dati di sviluppo) |
+
+Il nome del brand compare in un solo punto: `APP_NAME = 'Stivo'` in `mobile/src/lib/brand.ts`. È passato a i18next
+come variabile di default `{{app}}`, quindi i testi usano `{{app}}` e mai il nome scritto a mano.
+
+## v2.2 Tipi di oggetto
+`ItemType` = `clothing | shoes_accessories | books | electronics | home_kitchen | toys_games | documents | other`
+(etichette it: Vestiti, Scarpe e accessori, Libri, Elettronica, Casa e cucina, Giochi, Documenti, Altro).
+
+**Database (migrazione nuova, non modificare quelle esistenti):**
+- `items.item_type text not null default 'other'` con check sui valori sopra.
+- `items.attributes jsonb not null default '{}'`, con check: `jsonb_typeof(attributes) = 'object'` e chiavi ammesse
+  `author`, `model`, `serial`, valori stringa.
+- `boxes.default_item_type text null`, con lo stesso check (null = nessun predefinito).
+- La colonna generata `search` include anche i valori di `attributes` (author, model, serial).
+- Trigger dello storico: una modifica di `item_type` o `attributes` genera `updated`.
+- La view `box_overview` va **ricreata**, perché `boxes.*` è fissato al momento della creazione: deve esporre
+  `default_item_type`. `box_share_members` è ricreata con le stesse colonne di prima: non legge `boxes`, quindi niente
+  `default_item_type`. La RLS resta invariata.
+- `search_items(p_query text, p_type text default null)` (sostituisce la firma a 1 argomento):
+  - query non vuota: come v1, più il match su `attributes`; se `p_type` non è null, filtra per tipo;
+  - query vuota e `p_type` valorizzato: tutti gli oggetti leggibili di quel tipo (max 50, ordine `updated_at desc`);
+  - query vuota e `p_type` null: `[]`;
+  - `p_type` non valido, compresa la stringa vuota `''`: errore `invalid_type`.
+- Seed: tutti gli oggetti esistenti di Inverno ed Estate diventano `clothing`. "Il nome della rosa" diventa `books` con
+  `attributes = {"author":"Umberto Eco"}`. Inverno ed Estate hanno `default_item_type = 'clothing'`, Libri ha `'books'`.
+  Aggiungere a Libri un oggetto `electronics`: "Kindle Paperwhite", `{"model":"Paperwhite 11","serial":"G000ABC123"}`.
+
+**Campi per tipo (app):**
+| Tipo | Campi oltre ai comuni (nome, foto, marca, colore, categoria, note) |
+|---|---|
+| clothing, shoes_accessories | taglia (`size`), stagione (`season`) |
+| books | autore (`attributes.author`) |
+| electronics | modello (`attributes.model`), seriale (`attributes.serial`) |
+| home_kitchen, toys_games, documents, other | nessuno |
+
+Al salvataggio, i campi non previsti dal tipo scelto si salvano come `null` (`size`, `season`) o vengono rimossi da
+`attributes`. Un nuovo oggetto prende il tipo da `box.default_item_type`, oppure `other`. L'utente può cambiarlo.
+
+## v2.3 i18n
+- Librerie: `i18next`, `react-i18next`, `expo-localization`. Inizializzazione in `mobile/src/i18n/index.ts`, risorse in
+  `mobile/src/i18n/locales/it.json` ed `en.json`.
+- Lingue: **it** (principale) ed **en** (fallback). Ordine di scelta: lingua salvata (`AsyncStorage` `stivo.lang`),
+  poi lingua del dispositivo se `it`, altrimenti `en`.
+- Chiavi annidate `area.schermata.elemento`, per esempio `auth.login.submit`, `boxes.empty.title`,
+  `errors.rpc.not_owner`, `itemTypes.books`, `seasons.winter`, `roles.viewer`.
+- **Nessuna stringa visibile hardcoded** fuori da `locales/`, compresi titoli dello stack, tab, errori RPC,
+  etichetta PDF e messaggi di permesso mostrati in app. Fanno eccezione nomi propri e dati utente.
+- Date con `Intl.DateTimeFormat` nella lingua attiva.
+- Il cambio lingua dal profilo è immediato, senza riavvio.
+
+## v2.4 Navigazione e layout
+- **Tab bar:** `scan` · **`index` (Scatole, al centro)** · `profile`. Scatole è un pulsante tondo da 64 px, color Kraft, in
+  rilievo sopra la barra. La scheda `search` **non esiste più** come tab.
+- **Ricerca:** nuova route di stack `search` (`src/app/search.tsx`) con input autofocus e chip per filtrare per tipo.
+- **Schermata Scatole:** in cima una barra larga `home-search-bar` (aspetto da input, al tocco apre `/search`).
+  "Nuova scatola" diventa una **pillola flottante** in basso, in absolute sopra la lista. È visibile anche con la
+  lista vuota; la lista ha padding inferiore per non coprire l'ultima card.
+- **Profilo:** sezione "Lingua" con chip Italiano / English.
+
+## v2.5 testID (modifiche e aggiunte)
+- Tab: `tab-scan`, `tab-boxes`, `tab-profile` (**rimosso** `tab-search`)
+- Scatole: `home-search-bar`, `new-box-button` (ora flottante)
+- Ricerca: `search-input`, `search-result-<itemId>`, `search-empty`, `search-type-all`, `search-type-<type>`
+- Form scatola: `box-type-none`, `box-type-<type>`
+- Form oggetto: `item-type-<type>`, `item-author-input`, `item-model-input`, `item-serial-input`. Gli input
+  `item-size-input` e `item-season-<season>` esistono solo per clothing e shoes_accessories.
+- Riga oggetto: `item-type-icon-<itemId>`
+- Profilo: `lang-it`, `lang-en`
+- Dettaglio oggetto (aggiunti da frontend): `item-type`, `item-author`, `item-model`, `item-serial`
+- Nota layout: la pillola `new-box-button` sta a 40 px dal fondo, per non sovrapporsi al pulsante centrale della tab bar.

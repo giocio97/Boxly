@@ -1,4 +1,4 @@
-appId: com.boxly.app
+appId: com.stivo.app
 name: Login alice e lista scatole (mie + condivise)
 tags: [auth, smoke]
 ---
@@ -21,11 +21,16 @@ tags: [auth, smoke]
     id: "box-card-11111111-1111-1111-1111-000000000002"
 - assertNotVisible:
     id: "box-card-11111111-1111-1111-1111-000000000003"
-- assertVisible: ".*Inverno 2025.*"
 - assertVisible:
     id: "tab-scan"
 - assertVisible:
+    id: "tab-boxes"
+- assertNotVisible:
     id: "tab-search"
+- assertVisible:
+    id: "home-search-bar"
+- assertVisible:
+    id: "new-box-button"
 - assertVisible:
     id: "tab-profile"
 - takeScreenshot: screenshots/02_box_list_alice

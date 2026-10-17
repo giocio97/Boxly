@@ -65,7 +65,7 @@ grant execute on all functions in schema qa to anon, authenticated;
 -- ---- fine prelude ----
 select * from no_plan();
 
--- search_items e view (CONTRACT §4)
+-- search_items e view (CONTRACT §4; v2: chiamate a 1 argomento usano il default p_type = null)
 select qa.as_user(qa.alice());
 select results_eq($$select name, box_name, box_location from search_items('maglione blu')$$,
   $$values ('Maglione blu'::text, 'Inverno 2025'::text, 'Cantina'::text)$$, 'alice trova "maglione blu" in Inverno 2025 / Cantina');
@@ -98,7 +98,7 @@ select qa.as_user(qa.bob());
 select results_eq($$select id, my_role, item_count::int, owner_email from box_overview order by id$$,
   $$values (qa.inverno(), 'viewer'::text, 3, 'alice@boxly.test'::text),
            (qa.estate(), 'editor'::text, 63, 'alice@boxly.test'::text),
-           (qa.libri(), 'owner'::text, 1, 'bob@boxly.test'::text)$$, 'box_overview per bob: ruoli, conteggi, owner_email');
+           (qa.libri(), 'owner'::text, 2, 'bob@boxly.test'::text)$$, 'box_overview per bob: ruoli, conteggi, owner_email');
 select qa.as_user(qa.carol());
 select is_empty($$select 1 from box_overview$$, 'box_overview vuota per carol');
 select qa.as_user(qa.alice());

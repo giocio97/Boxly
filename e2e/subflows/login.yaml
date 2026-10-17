@@ -1,5 +1,5 @@
 # Login con EMAIL / PASSWORD (env). Presuppone la schermata di login visibile.
-appId: com.boxly.app
+appId: com.stivo.app
 ---
 - extendedWaitUntil:
     visible:

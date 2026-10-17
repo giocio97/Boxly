@@ -1,5 +1,5 @@
 # Avvio pulito + login + attesa lista scatole
-appId: com.boxly.app
+appId: com.stivo.app
 ---
 - launchApp:
     clearState: true

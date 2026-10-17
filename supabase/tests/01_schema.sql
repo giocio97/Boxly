@@ -82,10 +82,11 @@ select has_function('public', 'can_edit_box', array['uuid'], 'can_edit_box(uuid)
 select has_function('public', 'share_box', array['uuid','text','text'], 'share_box(uuid,text,text)');
 select has_function('public', 'revoke_share', array['uuid','uuid'], 'revoke_share(uuid,uuid)');
 select has_function('public', 'move_item', array['uuid','uuid'], 'move_item(uuid,uuid)');
-select has_function('public', 'search_items', array['text'], 'search_items(text)');
+select has_function('public', 'search_items', array['text','text'], 'search_items(text,text) (v2)');
+select hasnt_function('public', 'search_items', array['text'], 'search_items(text) a 1 argomento rimossa (v2)');
 select ok((select prosecdef from pg_proc where oid = 'public.box_role(uuid)'::regprocedure), 'box_role è security definer');
 select is((select provolatile::text from pg_proc where oid = 'public.box_role(uuid)'::regprocedure), 's', 'box_role è stable');
-select ok(not (select prosecdef from pg_proc where oid = 'public.search_items(text)'::regprocedure), 'search_items è security invoker');
+select ok(not (select prosecdef from pg_proc where oid = 'public.search_items(text,text)'::regprocedure), 'search_items è security invoker');
 select has_column('public', 'items', 'search', 'items.search (tsvector generated)');
 select is((select attgenerated::text from pg_attribute where attrelid = 'public.items'::regclass and attname = 'search'), 's', 'items.search è generated stored');
 select ok(exists(select 1 from pg_index i join pg_class c on c.oid = i.indexrelid join pg_am a on a.oid = c.relam
@@ -114,7 +115,7 @@ select results_eq($$select name, owner_id, location, season from boxes where id 
 select results_eq($$select box_id, user_id, role from box_shares order by box_id$$,
   $$values (qa.inverno(), qa.bob(), 'viewer'), (qa.estate(), qa.bob(), 'editor')$$, 'seed: condivisioni bob');
 select results_eq($$select box_id, count(*)::int from items group by box_id order by box_id$$,
-  $$values (qa.inverno(), 3), (qa.estate(), 2), (qa.libri(), 1)$$, 'seed: numero oggetti per scatola');
+  $$values (qa.inverno(), 3), (qa.estate(), 2), (qa.libri(), 2)$$, 'seed: numero oggetti per scatola (v2: + Kindle in Libri)');
 select results_eq($$select brand, color, size from items where name = 'Maglione blu'$$,
   $$values ('Uniqlo'::text, 'blu'::text, 'M'::text)$$, 'seed: Maglione blu completo');
 

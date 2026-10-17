@@ -1,6 +1,7 @@
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
 import { router, useIsFocused } from 'expo-router';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
@@ -11,10 +12,9 @@ import { ErrorText, Loading, Screen } from '@/components/Screen';
 import { parseBoxQr } from '@/lib/qr';
 import { radius, space, useTheme } from '@/theme';
 
-const NOT_BOXLY = 'Questo QR non è di Boxly';
-
 export default function ScanScreen() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const focused = useIsFocused();
   const [permission, requestPermission] = useCameraPermissions();
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export default function ScanScreen() {
   function handleValue(data: string): boolean {
     const id = parseBoxQr(data);
     if (!id) {
-      setError(NOT_BOXLY);
+      setError(t('scan.notOurs'));
       return false;
     }
     setError(null);
@@ -50,7 +50,7 @@ export default function ScanScreen() {
     <View style={styles.manual}>
       <Input
         testID="scan-manual-input"
-        placeholder="…oppure incolla il codice (boxly://box/…)"
+        placeholder={t('scan.manualPlaceholder')}
         autoCapitalize="none"
         autoCorrect={false}
         value={manual}
@@ -59,7 +59,7 @@ export default function ScanScreen() {
       />
       <Button
         testID="scan-manual-submit"
-        title="Apri"
+        title={t('common.open')}
         kind="secondary"
         small
         onPress={() => manual.trim() && handleValue(manual)}
@@ -75,10 +75,10 @@ export default function ScanScreen() {
         <EmptyState
           testID="scan-permission"
           icon="camera-outline"
-          title="Serve la fotocamera"
-          message="Per leggere il QR sulla scatola consenti a Boxly di usare la fotocamera."
+          title={t('scan.permissionTitle')}
+          message={t('scan.permissionMessage')}
           action={
-            <Button testID="scan-allow-camera" title="Consenti fotocamera" onPress={requestPermission} />
+            <Button testID="scan-allow-camera" title={t('scan.allowCamera')} onPress={requestPermission} />
           }
         />
         <ErrorText testID="scan-error">{error}</ErrorText>
@@ -102,7 +102,7 @@ export default function ScanScreen() {
         <View pointerEvents="none" style={[styles.frame, { borderColor: colors.accent }]} />
       </View>
       <AppText muted style={styles.center}>
-        Inquadra il QR sull&apos;etichetta della scatola.
+        {t('scan.hint')}
       </AppText>
       <ErrorText testID="scan-error">{error}</ErrorText>
       {manualEntry}

@@ -100,4 +100,13 @@ describe('dettaglio scatola per ruolo', () => {
     await userEvent.setup().press(screen.getByTestId('add-item-button'));
     expect(router.push).toHaveBeenCalledWith({ pathname: '/item/new', params: { boxId: INVERNO } });
   });
+
+  it('v2: ogni riga oggetto mostra l’icona del tipo con etichetta tradotta', async () => {
+    const libro = { ...maglione, id: '22222222-2222-2222-2222-000000000006', name: 'Libro', item_type: 'books', attributes: { author: 'Umberto Eco' }, size: null, season: null };
+    await setup('owner', [maglione, libro]);
+    expect(screen.getByTestId(`item-type-icon-${maglione.id}`).props.accessibilityLabel).toBe('Vestiti');
+    expect(screen.getByTestId(`item-type-icon-${libro.id}`).props.accessibilityLabel).toBe('Libri');
+    expect(screen.getByText(/Umberto Eco/)).toBeTruthy();
+  });
 });
+

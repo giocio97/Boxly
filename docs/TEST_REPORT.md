@@ -1,6 +1,130 @@
-# Boxly — Test report
+# Stivo (ex Boxly) — Test report
 
-Owner: **qa** · Data: 2026-10-15 · Fonte di verità: [CONTRACT.md](CONTRACT.md)
+Owner: **qa** · Ultimo aggiornamento: 2026-10-17 · Fonte di verità: [CONTRACT.md](CONTRACT.md) (sezione **v2**)
+
+# v2 (2026-10-17)
+
+## Sintesi esecutiva
+
+🟢 **VERDE.** Tutte le suite passano sull'ultimo giro, su database, Jest, iOS (build nativa `com.stivo.app`) e Android (Expo Go). I 2 bug trovati (BUG-101, BUG-102, entrambi frontend) sono chiusi e riverificati. Nessun bug sul backend.
+
+Cosa copre la v2 del contratto:
+- rinomina in Stivo, con QR `stivo://` e `boxly://` ancora accettato;
+- tipi di oggetto con `attributes` e `default_item_type`;
+- `search_items(p_query, p_type)`;
+- i18n it/en con cambio lingua immediato;
+- nuova navigazione: tab centrale, `home-search-bar`, ricerca come route di stack, pillola flottante;
+- nuovi testID.
+
+Il login Google è **fuori scope** della v2.
+
+## Risultati per suite
+
+| Suite | Strumento | Piattaforma | Totali | Passati | Falliti | Δ rispetto a v1 | Durata |
+|---|---|---|---:|---:|---:|---|---:|
+| Database (RLS, RPC, trigger, ricerca, view, storage, tipi) | pgTAP via `supabase test db` | Postgres locale (progetto `stivo`) | 358 (10 file) | 358 | 0 | +123 (nuovo `10_item_types.sql`, 122 test; v1 adeguati) | ~1 s |
+| Unit + componenti + schermate + i18n | Jest 29 + RNTL 13 (jest-expo) | Node | 252 (22 suite) | 252 | 0 | +125 (7 suite nuove) | ~5 s |
+| Typecheck (app + test) | `tsc --noEmit` | — | — | ✅ | — | — | — |
+| E2E completa | Maestro 2.11 | **iOS** build nativa `com.stivo.app`, iPhone 17 Pro (lingua it) | 11 flussi | 11 | 0 | +2 flussi (10, 11) | 6 min 30 s |
+| E2E smoke | Maestro 2.11 | **Android** Expo Go 57.0.9 `host.exp.exponent`, Pixel 9 Pro API 35 (locale en-US) | 2 flussi | 2 | 0 | smoke esteso (tab centrale, barra ricerca, filtro tipo, lingua) | 2 min 16 s |
+
+Primo giro E2E iOS: 6/11 (5 falliti). Le cause:
+- 4 flussi bloccati da BUG-101;
+- 2 errori nei test, già corretti: un chip fuori schermo nello scroll orizzontale dei filtri.
+
+Primo giro Android: 0/2, per un errore d'ambiente. Due istanze di Maestro in parallelo (iOS e Android) si contendevano l'adb server. Rieseguito da solo: 2/2.
+
+## Copertura v2
+
+### Database (`supabase/tests/10_item_types.sql` + adeguamenti v1)
+| Area | Cosa verifica |
+|---|---|
+| Schema | `items.item_type` (text, not null, default `other`); `items.attributes` (jsonb, not null, default `{}`); `boxes.default_item_type` (nullable); `search_items(text,text)` presente, firma `(text)` rimossa, security invoker |
+| Vincoli | Gli 8 tipi accettati su item e box. Rifiutati: tipo sconosciuto, maiuscole, stringa vuota, null. `attributes`: ammessi author/model/serial stringa e `{}`; rifiutati chiavi estranee (`color`, `isbn`, `Author`), array, stringa JSON, JSON null, SQL null, valori numerici/oggetto/array/null |
+| Colonna `search` | Include `attributes.author` e `serial` |
+| RLS sulle nuove colonne | Bob viewer non cambia tipo e attributes, bob editor sì. `default_item_type`: lo cambia solo chi può modificare la scatola. Alice e carol non leggono gli attributes di Libri. Anon negato |
+| Storico | Cambio di `item_type` o `attributes` → `updated` (attore, scatola). Update no-op → nessun evento. Move + cambio tipo → solo `moved` |
+| `search_items` | Per autore (`eco`, `umberto`, `ECO`, prefisso `herb`), seriale e prefisso, modello (anche multi-parola e dopo un update). Filtro `p_type` (positivo e negativo, null esplicito). Query vuota + tipo: tutti i leggibili del tipo, ordinati per `updated_at desc`, max 50; solo spazi = vuota. Query vuota senza tipo → `[]`. `invalid_type` per tipo sconosciuto o `''`. Carol non trova nulla; alice non vede Libri; anon → 42501 |
+| View | `box_overview.default_item_type` per bob, valori aggiornati. `security_invoker` mantenuto su entrambe le view ricreate |
+| Seed v2 | `default_item_type` di Inverno ed Estate = clothing, di Libri = books. Oggetti di Inverno ed Estate tutti clothing. "Il nome della rosa": books, `{"author":"Umberto Eco"}`. Kindle Paperwhite: electronics con model e serial, evento `added` |
+| Test v1 adeguati | `01` firma a 2 argomenti e conteggio seed di Libri = 2. `03`: bob vede 7 oggetti. `08`: `box_overview` di Libri = 2. Le chiamate v1 a 1 argomento ora usano il default `p_type = null` |
+
+### Jest (`mobile/__tests__/`)
+| File | Cosa verifica |
+|---|---|
+| `i18n/locales.test.ts` (nuovo) | Stesse chiavi in it.json ed en.json, nessun valore vuoto, stessi placeholder `{{…}}`. Il brand non è scritto a mano (si usa `{{app}}`). en non è una copia dell'it. Chiavi obbligatorie (`itemTypes.*`, `seasons.*`, `roles.*`, `errors.rpc.*` compreso `invalid_type`). Etichette italiane dei tipi come da contratto |
+| `i18n/hardcoded.test.ts` (nuovo) | Euristica statica su `mobile/src` (esclusi `locales/` e `brand.ts`) che cerca: testo JSX letterale, prop visibili (`title`, `label`, `placeholder`, `message`, `accessibilityLabel`…) con stringa letterale, chiavi di opzioni (`headerTitle`, `tabBarLabel`…), stringhe con accenti, apostrofo tipografico o parole italiane frequenti, `Alert.alert` letterale. Ignora testID, icone, route, URL, chiavi i18n e commenti. Ha un autotest con casi positivi e negativi. Al primo giro trovava 99 stringhe; ora 0 |
+| `i18n/language.test.tsx` (nuovo) | Lingua iniziale `it` nei test; `LANG_KEY = stivo.lang`. Cambio it → en → it con aggiornamento immediato di un testo renderizzato, salvataggio in AsyncStorage, `loadSavedLanguage` (valori non validi ignorati). `{{app}}` → Stivo in entrambe le lingue, fallback en. Lingua del dispositivo: it → it; en, fr, de → en |
+| `lib/itemTypes.test.ts` (nuovo) | Registro degli 8 tipi in ordine. Campi per tipo (size/season, author, model/serial, nessuno), icone, `isItemType` (rifiuta le chiavi del prototype), fallback `other`. `cleanAttributes` (solo le chiavi del tipo, trim, vuoti rimossi) |
+| `lib/brand.test.ts` (nuovo) | `APP_NAME = 'Stivo'`. `app.json`: name, slug, scheme `["stivo","boxly"]`, bundle id e package `com.stivo.app`, nessun "Boxly" residuo |
+| `screens/search.test.tsx` (nuovo) | Input + chip "Tutti" + 8 tipi. Nessuna RPC a riposo. Ricerca per autore → risultato → `/item/[id]`. Solo chip → `('', tipo)`. Query + tipo e poi "Tutti". `search-empty`. `invalid_type` tradotto |
+| `screens/homeProfile.test.tsx` (nuovo) | `new-box-button` e `home-search-bar` visibili anche a lista vuota; navigazione verso `/search` e `/box/new`. Profilo: chip `lang-it`/`lang-en`; English cambia subito i testi e salva `stivo.lang`, poi torna in Italiano |
+| `screens/itemForm.test.tsx` (riscritto) | Chip per gli 8 tipi, default `other`. Campi dinamici per ognuno degli 8 tipi. Cambio di tipo via chip. Payload: libro con autore; elettronica con seriale vuoto rimosso; clothing → books azzera size e season; books → other svuota `attributes`; precompilazione in modifica; nessuna chiave estranea |
+| `screens/forms.test.tsx` | BoxForm: `box-type-none` + 8 chip, `default_item_type` nel payload (e null con "nessuno"), precompilazione in modifica |
+| Adeguati | `qr` (genera `stivo://`, accetta anche `boxly://`, 23 casi rifiutati); `scan` (stivo e legacy, "non è di Stivo"); `label` (wordmark Stivo, stagione tradotta in en); `api` (`search_items` con `p_type` sempre presente); `errors` (+`invalid_type`); `boxDetail` (`item-type-icon-<id>` con etichetta tradotta, autore nella riga); `share`, `smoke`, `mocks` |
+
+### E2E (Maestro)
+
+Su iOS il simulatore è in italiano, quindi l'app parte in it. Su Android l'emulatore è en-US, quindi parte in en (comportamento corretto da contratto). Per questo i flussi usano testID; il testo compare solo per dati utente, dialoghi di sistema o per verificare proprio la lingua.
+
+| Flusso (`e2e/`) | iOS (build nativa) | Android (Expo Go) |
+|---|:---:|:---:|
+| 01 Login con password errata → `auth-error` | ✅ | ✅ (smoke) |
+| 02 Login alice → lista; tab `tab-scan` · `tab-boxes` · `tab-profile`, niente `tab-search`, `home-search-bar` e `new-box-button` | ✅ | ✅ (smoke) |
+| 03 Registrazione → lista vuota con `new-box-button` e `home-search-bar` visibili → apre "Nuova scatola" | ✅ | — |
+| 04 Crea scatola → oggetto con foto → QR | ✅ | — |
+| 05 Condivisione alice → carol in sola lettura, revoca | ✅ | — |
+| 06 Ruoli bob (viewer / editor) | ✅ | ✅ (solo viewer) |
+| 07 Ricerca da `home-search-bar`: "maglione", filtro Vestiti (resta), filtro Scarpe e accessori (`search-empty`), dettaglio, nessun risultato | ✅ | ✅ (smoke, filtro Vestiti) |
+| 08 Deep link `stivo://box/…0001` e legacy `boxly://box/…0001` → Inverno 2025; `stivo://` prima del login → Estate dopo il login | ✅ | ⚠️ non testabile in Expo Go |
+| 09 Profilo, logout, sessione non ripristinata | ✅ | ✅ (smoke) |
+| **10** (nuovo) Scatola con tipo predefinito Libri → l'oggetto nasce come libro (`item-author-input` visibile, `item-size-input` no) → autore → `item-type-icon` → la ricerca per autore lo trova; con il filtro Vestiti sparisce | ✅ | — |
+| **11** (nuovo) Profilo: `lang-en` → "Log out", Scatole in inglese, riavvio → resta in inglese, `lang-it` → "Esci" | ✅ | ✅ (smoke: en → it → en) |
+| Dettaglio scatola → QR, `item-type-icon` nella riga | ✅ | ✅ (smoke) |
+
+Altre modifiche E2E:
+- `appId` → `com.stivo.app` in tutti i flussi e subflow;
+- i selettori sui testi UI sostituiti da testID (righe seed `item-row-2222…0001`, risultati `search-result-2222…0001`, `item-edit-button`);
+- 03 chiude la tastiera con un tocco a coordinate invece che sul testo;
+- `scripts/run-e2e.sh` e `android/subflows/open_expo.yaml` aggiornati (Stivo, testi di attesa in it ed en).
+
+## Bug trovati (v2)
+
+| ID | Severità | Owner | Descrizione | Stato |
+|---|---|---|---|---|
+| BUG-101 | Alta | frontend | iOS (dev build): dopo il login un toast LogBox ("Open debugger to view warnings") copriva la tab bar e il footer dei form. Il primo tap su `tab-profile` o `box-save` andava perso: 4 flussi E2E rossi (04, 09, 10, 11). Causa: warning di expo-linking "multiple possible URI schemes" dovuto ai due schemi `stivo` e `boxly` richiesti dal contratto | ✅ Silenziato in modo mirato (`LogBox.ignoreLogs` in `_layout.tsx`, commentato; non eliminabile alla fonte perché expo-router chiama `Linking.createURL` senza schema). iOS 11/11 |
+| BUG-102 | Bassa | frontend | Profilo: la tagline "Stivo · Sai sempre cosa c'è dentro." finiva sotto il pulsante centrale `tab-boxes` in rilievo | ✅ Corretto (padding inferiore), verificato a schermo |
+
+Note, non bug:
+- Gli errori segnalati da backend in `10_item_types.sql` erano dei test: il nome seed è `Libro "Il nome della rosa"`, e gli insert di prova di alice finivano nei suoi risultati. Un test sull'ordinamento era non deterministico perché `now()` è costante nella transazione; ora forza `updated_at` in modo esplicito.
+- Sul simulatore c'era ancora la vecchia app `com.boxly.app`, che registra lo schema `boxly://`. È stata disinstallata, così il test del link legacy apre davvero Stivo.
+
+## Limiti (v2)
+- **Login Google**: fuori scope della v2, non testato.
+- **Android solo in Expo Go**, come in v1 (Gradle bloccato dal proxy). Esclusi:
+  - deep link `stivo://` e `boxly://`;
+  - selezione della foto;
+  - nome e icona nativi `com.stivo.app`.
+
+  Il cambio lingua su Android è coperto. La lingua scelta resta salvata in AsyncStorage di Expo Go tra un giro e l'altro.
+- **Persistenza della lingua al riavvio**: verificata su iOS, con la sessione ripristinata. Il ramo "schermata di login già in inglese dopo il riavvio" è nel flusso 11 come ramo condizionale, ma in questo giro non è stato eseguito.
+- **Chip dei tipi fuori schermo**: i filtri oltre il terzo (Libri, Elettronica…) richiedono uno scroll orizzontale. Gli E2E usano i chip sempre visibili; gli altri sono coperti in Jest e pgTAP.
+- **Euristica sulle stringhe hardcoded**: è statica e approssimata. Non vede testi costruiti dinamicamente fuori da `t()`, né stringhe inglesi senza parole italiane. Va affiancata alla revisione del codice.
+- **Etichetta PDF in inglese**: verificata solo nell'HTML in Jest (stagione tradotta), non su stampa reale.
+- Restano validi i limiti della v1 (fotocamera reale, stampa fisica, concorrenza, accessibilità, prestazioni).
+
+## Screenshot E2E (v2)
+- **iOS**: [02](../e2e/screenshots/ios/02_box_list_alice.png) · [03](../e2e/screenshots/ios/03_signup_empty.png) · [07a](../e2e/screenshots/ios/07a_search_maglione.png) · [08a stivo://](../e2e/screenshots/ios/08a_deeplink_stivo_inverno.png) · [08b boxly:// legacy](../e2e/screenshots/ios/08b_deeplink_boxly_legacy.png) · [08c dopo il login](../e2e/screenshots/ios/08c_deeplink_after_login.png) · [10a form libro](../e2e/screenshots/ios/10a_item_book_author.png) · [10b](../e2e/screenshots/ios/10b_box_with_book.png) · [10c ricerca per autore](../e2e/screenshots/ios/10c_search_by_author.png) · [11a profilo EN](../e2e/screenshots/ios/11a_profile_english.png) · [11b scatole EN](../e2e/screenshots/ios/11b_boxes_english.png) · [11d profilo IT](../e2e/screenshots/ios/11d_profile_italiano.png)
+- **Android**: [lista](../e2e/screenshots/android/android_02_box_list.png) · [dettaglio](../e2e/screenshots/android/android_03_box_detail.png) · [ricerca](../e2e/screenshots/android/android_05_search.png) · [lingua IT](../e2e/screenshots/android/android_06_lang_it.png) · [logout](../e2e/screenshots/android/android_07_logged_out.png) · [bob viewer](../e2e/screenshots/android/android_08_bob_viewer.png)
+
+I comandi per rieseguire sono invariati: vedi [in fondo](#comandi-per-rieseguire). Prima di ogni giro E2E serve `supabase db reset`. Non lanciare iOS e Android in parallelo.
+
+---
+
+# v1 (2026-10-15) — storico
+
+> Sezione originale della v1 (app "Boxly"), lasciata come storico. Nomi, schemi e testID sono quelli della v1.
+> Gli screenshot con lo stesso nome file sono stati sovrascritti dal giro v2. Le versioni v1 sono nella storia git (commit `b01532e`).
 
 ## Sintesi esecutiva
 

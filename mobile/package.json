@@ -1,5 +1,5 @@
 {
-  "name": "boxly",
+  "name": "stivo",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
@@ -19,6 +19,7 @@
     "expo-image-manipulator": "~57.0.21",
     "expo-image-picker": "~57.0.20",
     "expo-linking": "~57.0.13",
+    "expo-localization": "~57.0.2",
     "expo-print": "~57.0.2",
     "expo-router": "~57.0.28",
     "expo-sharing": "~57.0.23",
@@ -27,9 +28,11 @@
     "expo-symbols": "~57.0.3",
     "expo-system-ui": "~57.0.4",
     "expo-web-browser": "~57.0.3",
+    "i18next": "^26.4.7",
     "qrcode": "^1.5.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-i18next": "^17.0.20",
     "react-native": "0.86.3",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-qrcode-svg": "^6.3.26",

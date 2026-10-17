@@ -1,4 +1,4 @@
-/** Scanner: accetta solo boxly://box/<uuid>, altrimenti "Questo QR non è di Boxly". */
+/** Scanner (v2): accetta stivo://box/<uuid> e il legacy boxly://box/<uuid>, altrimenti "Questo QR non è di Stivo". */
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 
 import ScanScreen from '@/app/(tabs)/scan';
@@ -27,7 +27,13 @@ beforeEach(() => {
 });
 
 describe('scanner QR', () => {
-  it('QR Boxly → apre la scatola', () => {
+  it('QR Stivo → apre la scatola', () => {
+    render(<ScanScreen />);
+    act(() => mockOnScan!({ data: `stivo://box/${INVERNO}` }));
+    expect(router.push).toHaveBeenCalledWith({ pathname: '/box/[id]', params: { id: INVERNO } });
+  });
+
+  it('QR legacy Boxly (etichetta vecchia) → apre la scatola', () => {
     render(<ScanScreen />);
     act(() => mockOnScan!({ data: `boxly://box/${INVERNO}` }));
     expect(router.push).toHaveBeenCalledWith({ pathname: '/box/[id]', params: { id: INVERNO } });
@@ -36,16 +42,16 @@ describe('scanner QR', () => {
   it('QR estraneo → errore, nessuna navigazione', () => {
     render(<ScanScreen />);
     act(() => mockOnScan!({ data: 'https://example.com' }));
-    expect(screen.getByTestId('scan-error')).toHaveTextContent('Questo QR non è di Boxly');
+    expect(screen.getByTestId('scan-error')).toHaveTextContent(/Questo QR non è di Stivo/);
     expect(router.push).not.toHaveBeenCalled();
   });
 
   it('scansioni ripetute dello stesso QR valido non aprono più volte la scatola', () => {
     render(<ScanScreen />);
     act(() => {
-      mockOnScan!({ data: `boxly://box/${INVERNO}` });
-      mockOnScan!({ data: `boxly://box/${INVERNO}` });
-      mockOnScan!({ data: `boxly://box/${INVERNO}` });
+      mockOnScan!({ data: `stivo://box/${INVERNO}` });
+      mockOnScan!({ data: `stivo://box/${INVERNO}` });
+      mockOnScan!({ data: `stivo://box/${INVERNO}` });
     });
     expect(router.push).toHaveBeenCalledTimes(1);
   });
@@ -55,11 +61,11 @@ describe('scanner QR', () => {
     render(<ScanScreen />);
     expect(screen.getByTestId('scan-permission')).toBeTruthy();
     const user = userEvent.setup();
-    await user.type(screen.getByTestId('scan-manual-input'), 'boxly://box/xyz');
+    await user.type(screen.getByTestId('scan-manual-input'), 'stivo://box/xyz');
     await user.press(screen.getByTestId('scan-manual-submit'));
-    expect(screen.getByTestId('scan-error')).toHaveTextContent('Questo QR non è di Boxly');
+    expect(screen.getByTestId('scan-error')).toHaveTextContent(/Questo QR non è di Stivo/);
     await user.clear(screen.getByTestId('scan-manual-input'));
-    await user.type(screen.getByTestId('scan-manual-input'), `boxly://box/${INVERNO}`);
+    await user.type(screen.getByTestId('scan-manual-input'), `stivo://box/${INVERNO}`);
     await user.press(screen.getByTestId('scan-manual-submit'));
     expect(router.push).toHaveBeenCalledWith({ pathname: '/box/[id]', params: { id: INVERNO } });
   });

@@ -1,5 +1,5 @@
-appId: com.boxly.app
-name: Ricerca "maglione" trova il Maglione blu in Inverno 2025
+appId: com.stivo.app
+name: Ricerca "maglione" dalla barra della home, filtro per tipo, nessun risultato
 tags: [search, smoke]
 ---
 - runFlow:
@@ -8,21 +8,40 @@ tags: [search, smoke]
       EMAIL: alice@boxly.test
       PASSWORD: password123
 - tapOn:
-    id: "tab-search"
-- tapOn:
-    id: "search-input"
+    id: "home-search-bar"
+- extendedWaitUntil:
+    visible:
+      id: "search-input"
+    timeout: 10000
+- assertVisible:
+    id: "search-type-all"
 - inputText: "maglione"
 - extendedWaitUntil:
     visible:
-      id: "search-result-.*"
+      id: "search-result-22222222-2222-2222-2222-000000000001"
     timeout: 10000
-- assertVisible: ".*Maglione blu.*"
 - assertVisible: ".*Inverno 2025.*"
 - takeScreenshot: screenshots/07a_search_maglione
+# filtro per tipo: Vestiti → resta; Scarpe e accessori (chip visibile senza scroll orizzontale) → nessun risultato
 - tapOn:
-    id: "search-result-.*"
+    id: "search-type-clothing"
 - extendedWaitUntil:
-    visible: ".*Maglione blu.*"
+    visible:
+      id: "search-result-22222222-2222-2222-2222-000000000001"
+    timeout: 10000
+- tapOn:
+    id: "search-type-shoes_accessories"
+- extendedWaitUntil:
+    visible:
+      id: "search-empty"
+    timeout: 10000
+- tapOn:
+    id: "search-type-all"
+- tapOn:
+    id: "search-result-22222222-2222-2222-2222-000000000001"
+- extendedWaitUntil:
+    visible:
+      id: "item-edit-button"
     timeout: 10000
 - runFlow: subflows/go_back.yaml
 - tapOn:

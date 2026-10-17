@@ -1,6 +1,7 @@
 import type { BoxOverview, Item } from '@shared/types';
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
@@ -20,6 +21,7 @@ import { space, useTheme } from '@/theme';
 export default function BoxDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [box, setBox] = useState<BoxOverview | null | undefined>(undefined);
   const [items, setItems] = useState<Item[]>([]);
   const [photos, setPhotos] = useState<Record<string, string>>({});
@@ -30,7 +32,7 @@ export default function BoxDetailScreen() {
   const load = useCallback(async () => {
     const [b, it] = await Promise.all([getBox(id), listItems(id)]);
     if (b.error) {
-      setError(errorMessage(b.error, 'Non riesco a caricare la scatola. Riprova.'));
+      setError(errorMessage(b.error, t('boxes.detail.loadError')));
       setBox((prev) => prev ?? null);
       return;
     }
@@ -39,7 +41,7 @@ export default function BoxDetailScreen() {
     const list = it.data ?? [];
     setItems(list);
     signedUrls(list.map((i) => i.photo_path)).then(setPhotos);
-  }, [id]);
+  }, [id, t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -54,7 +56,7 @@ export default function BoxDetailScreen() {
     setDeleting(false);
     setConfirmDelete(false);
     if (res.error) {
-      setError(errorMessage(res.error, 'Non riesco a eliminare la scatola. Riprova.'));
+      setError(errorMessage(res.error, t('boxes.detail.deleteError')));
       return;
     }
     removePhotos(paths).catch(() => {});
@@ -68,9 +70,9 @@ export default function BoxDetailScreen() {
         <EmptyState
           testID="box-not-found"
           icon="lock-closed-outline"
-          title="Scatola non disponibile"
-          message={error ?? 'Questa scatola non esiste o non è condivisa con te.'}
-          action={<Button title="Torna alle scatole" kind="secondary" onPress={() => router.replace('/')} />}
+          title={t('common.boxUnavailable')}
+          message={error ?? t('boxes.detail.notFound')}
+          action={<Button title={t('boxes.detail.backToBoxes')} kind="secondary" onPress={() => router.replace('/')} />}
         />
       </View>
     );
@@ -99,7 +101,7 @@ export default function BoxDetailScreen() {
             </View>
             {box.my_role !== 'owner' ? (
               <AppText variant="secondary" muted>
-                Condivisa da {box.owner_email}
+                {t('boxes.detail.sharedBy', { email: box.owner_email })}
               </AppText>
             ) : null}
             {box.notes ? <AppText variant="secondary">{box.notes}</AppText> : null}
@@ -107,7 +109,7 @@ export default function BoxDetailScreen() {
             <View style={styles.actions}>
               <Button
                 testID="show-qr-button"
-                title="QR"
+                title={t('boxes.detail.qr')}
                 icon="qr-code-outline"
                 kind="secondary"
                 small
@@ -115,7 +117,7 @@ export default function BoxDetailScreen() {
               />
               <Button
                 testID="share-button"
-                title="Condividi"
+                title={t('boxes.detail.share')}
                 icon="people-outline"
                 kind="secondary"
                 small
@@ -123,7 +125,7 @@ export default function BoxDetailScreen() {
               />
               <Button
                 testID="history-button"
-                title="Storico"
+                title={t('boxes.detail.history')}
                 icon="time-outline"
                 kind="secondary"
                 small
@@ -132,7 +134,7 @@ export default function BoxDetailScreen() {
               {editable ? (
                 <Button
                   testID="edit-box-button"
-                  title="Modifica"
+                  title={t('common.edit')}
                   icon="create-outline"
                   kind="secondary"
                   small
@@ -142,7 +144,7 @@ export default function BoxDetailScreen() {
               {isOwner ? (
                 <Button
                   testID="delete-box-button"
-                  title="Elimina"
+                  title={t('common.delete')}
                   icon="trash-outline"
                   kind="danger"
                   small
@@ -153,12 +155,12 @@ export default function BoxDetailScreen() {
             <ErrorText>{error}</ErrorText>
             <View style={styles.sectionRow}>
               <AppText variant="section">
-                {items.length === 1 ? '1 oggetto' : `${items.length} oggetti`}
+                {t('common.itemCount', { count: items.length })}
               </AppText>
               {editable ? (
                 <Button
                   testID="add-item-button"
-                  title="Aggiungi"
+                  title={t('boxes.detail.addItem')}
                   icon="add"
                   small
                   onPress={() => router.push({ pathname: '/item/new', params: { boxId: id } })}
@@ -171,8 +173,8 @@ export default function BoxDetailScreen() {
           <EmptyState
             testID="empty-items"
             icon="shirt-outline"
-            title="La scatola è vuota."
-            message={editable ? 'Aggiungi il primo oggetto con una foto.' : 'Qui non c’è ancora niente.'}
+            title={t('boxes.detail.emptyTitle')}
+            message={editable ? t('boxes.detail.emptyEditable') : t('boxes.detail.emptyReadonly')}
           />
         }
         renderItem={({ item }) => (
@@ -186,9 +188,9 @@ export default function BoxDetailScreen() {
       />
       <ConfirmDialog
         visible={confirmDelete}
-        title="Eliminare la scatola?"
-        message={`"${box.name}" e tutti i suoi oggetti verranno eliminati. Non si può annullare.`}
-        confirmLabel="Elimina"
+        title={t('boxes.detail.deleteTitle')}
+        message={t('boxes.detail.deleteMessage', { name: box.name })}
+        confirmLabel={t('common.delete')}
         destructive
         loading={deleting}
         onConfirm={doDelete}

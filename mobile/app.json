@@ -1,18 +1,21 @@
 {
   "expo": {
-    "name": "Boxly",
-    "slug": "boxly",
+    "name": "Stivo",
+    "slug": "stivo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "boxly",
+    "scheme": [
+      "stivo",
+      "boxly"
+    ],
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.boxly.app",
+      "bundleIdentifier": "com.stivo.app",
       "supportsTablet": false,
       "infoPlist": {
-        "NSCameraUsageDescription": "Boxly usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
-        "NSPhotoLibraryUsageDescription": "Boxly usa le tue foto per aggiungere un'immagine agli oggetti nelle scatole.",
+        "NSCameraUsageDescription": "Stivo usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
+        "NSPhotoLibraryUsageDescription": "Stivo usa le tue foto per aggiungere un'immagine agli oggetti nelle scatole.",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true,
           "NSAllowsLocalNetworking": true
@@ -20,7 +23,7 @@
       }
     },
     "android": {
-      "package": "com.boxly.app",
+      "package": "com.stivo.app",
       "adaptiveIcon": {
         "backgroundColor": "#B8742F",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
@@ -50,20 +53,21 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Boxly usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
+          "cameraPermission": "Stivo usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
           "recordAudioAndroid": false
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Boxly usa le tue foto per aggiungere un'immagine agli oggetti nelle scatole.",
-          "cameraPermission": "Boxly usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
+          "photosPermission": "Stivo usa le tue foto per aggiungere un'immagine agli oggetti nelle scatole.",
+          "cameraPermission": "Stivo usa la fotocamera per fotografare gli oggetti e leggere il QR delle scatole.",
           "microphonePermission": false
         }
       ],
       "expo-sharing",
-      "expo-font"
+      "expo-font",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

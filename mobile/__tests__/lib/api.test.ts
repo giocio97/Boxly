@@ -72,8 +72,26 @@ describe('RPC', () => {
   it('searchItems → search_items, data null → []', async () => {
     mockRpc.mockResolvedValue({ data: null, error: null });
     const r = await api.searchItems('maglione');
-    expect(mockRpc).toHaveBeenCalledWith('search_items', { p_query: 'maglione' });
+    expect(mockRpc).toHaveBeenCalledWith('search_items', { p_query: 'maglione', p_type: null });
     expect(r).toEqual({ data: [], error: null });
+  });
+
+  it('searchItems con tipo → p_type', async () => {
+    mockRpc.mockResolvedValue({ data: [], error: null });
+    await api.searchItems('eco', 'books');
+    expect(mockRpc).toHaveBeenCalledWith('search_items', { p_query: 'eco', p_type: 'books' });
+  });
+
+  it('searchItems query vuota + tipo → chiama comunque la RPC', async () => {
+    mockRpc.mockResolvedValue({ data: [], error: null });
+    await api.searchItems('', 'clothing');
+    expect(mockRpc).toHaveBeenCalledWith('search_items', { p_query: '', p_type: 'clothing' });
+  });
+
+  it('searchItems invalid_type → errore propagato', async () => {
+    mockRpc.mockResolvedValue({ data: null, error: { message: 'invalid_type' } });
+    const r = await api.searchItems('x', 'furniture' as never);
+    expect(r.error?.message).toBe('invalid_type');
   });
 });
 
